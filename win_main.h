@@ -2,8 +2,9 @@
 #define MAIN_H
 
 #include <Windows.h>
-//#include <tchar.h>
 #include <string>
+#include "helper.h"
+#include "thieves.h"
 
 
 ///////////////
@@ -32,6 +33,5 @@ char game = 't';
 
 LRESULT CALLBACK WinProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
 
-HWND CreateCustomWindow(std::string szClassName, std::string winTitle, int width, int height, HINSTANCE hinstance, HBRUSH background);
 
 #endif

@@ -18,9 +18,27 @@
     <ClCompile Include="win_main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="helper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="thieves.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="card.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="helper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="win_main.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="thieves.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="card.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

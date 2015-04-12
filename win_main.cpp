@@ -1,28 +1,47 @@
 #include "win_main.h"
+#include <iostream>
 
 int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hprev, PSTR cmdline, int ishow)
 {
 	MSG msg;
 	HWND hwnd;
+	WNDCLASSEX wndclassex = {0};
 
-	switch(game)
-	{
-	case 't':
-		winTitle = "Forty Thieves";
-		break;
-	case 'k':
-		winTitle = "Kings Corners";
-		break;
-	default:
-		winTitle = "Things";
-	}
+	winTitle = Helper::getTitle(game);
 
-	hwnd = CreateCustomWindow(kClassName, winTitle, kWinWid, kWinHgt, hinstance, kBackground);
+	wndclassex.cbSize = sizeof(WNDCLASSEX);
+	wndclassex.style = CS_HREDRAW | CS_VREDRAW;
+	wndclassex.lpfnWndProc = WinProc;
+	wndclassex.hInstance = hinstance;
+	wndclassex.hbrBackground = kBackground;
+	wndclassex.lpszClassName = kClassName.c_str();
+	wndclassex.hCursor = (HCURSOR)LoadImage(NULL, MAKEINTRESOURCE(IDC_ARROW), IMAGE_CURSOR, 0, 0, LR_SHARED);
+
+	RegisterClassEx(&wndclassex);
+
+	hwnd = CreateWindowEx(
+		NULL,
+		kClassName.c_str(),
+		winTitle.c_str(),
+		WS_OVERLAPPEDWINDOW,
+		CW_USEDEFAULT,
+		CW_USEDEFAULT,
+		kWinWid,
+		kWinHgt,
+		NULL,
+		NULL,
+		hinstance,
+		NULL
+	);
+	if(!hwnd) return EXIT_FAILURE;
 
 	gHDC = GetDC(hwnd);
 	if(!gHDC) return EXIT_FAILURE;
 
 	GetClientRect(hwnd, &gRect);
+
+	ShowWindow(hwnd, SW_SHOWDEFAULT);
+	UpdateWindow(hwnd);
 
 	while(1)
 	{
@@ -38,7 +57,7 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hprev, PSTR cmdline, int ishow
 		}
 		else
 		{
-
+			Sleep(10);
 		}
 	}
 
@@ -46,47 +65,18 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hprev, PSTR cmdline, int ishow
 	return msg.wParam;
 }
 
-HWND CreateCustomWindow(std::string szClassName, std::string winTitle, int width, int height, HINSTANCE hinstance, HBRUSH background)
-{
-	HWND hwnd;
-	WNDCLASSEX wndclassex = {0};
-
-	wndclassex.cbSize = sizeof(WNDCLASSEX);
-	wndclassex.style = CS_HREDRAW | CS_VREDRAW;
-	wndclassex.lpfnWndProc = WinProc;
-	wndclassex.hInstance = hinstance;
-	wndclassex.hbrBackground = background;
-	wndclassex.lpszClassName = szClassName.c_str();
-	wndclassex.hCursor = (HCURSOR)LoadImage(NULL, MAKEINTRESOURCE(IDC_ARROW), IMAGE_CURSOR, 0, 0, LR_SHARED);
-
-	RegisterClassEx(&wndclassex);
-
-	hwnd = CreateWindowEx(
-		NULL,
-		szClassName.c_str(),
-		winTitle.c_str(),
-		WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT,
-		CW_USEDEFAULT,
-		width,
-		height,
-		NULL,
-		NULL,
-		hinstance,
-		NULL
-	);
-	if(!hwnd) return NULL;
-	
-	ShowWindow(hwnd, SW_SHOWDEFAULT);
-	UpdateWindow(hwnd);
-
-	return hwnd;
-}
-
 LRESULT CALLBACK WinProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 {
+	Thieves thieves(hwnd);
+
 	switch(message)
 	{
+	case WM_PAINT:
+		if(game == 't')
+		{
+			thieves.paintScreen();
+		}
+		break;
 	case WM_DESTROY:
 		ReleaseDC(hwnd,gHDC);
 		PostQuitMessage(0);
