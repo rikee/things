@@ -4,6 +4,7 @@
 #include <Windows.h>
 #include <string>
 #include "card.h"
+#include "deck.h"
 
 class Thieves
 {
@@ -21,7 +22,12 @@ private:
 	int low;
 	int average;
 	int points;
-	std::string cardImage;
+	int cardWidth;
+	int cardHeight;
+	std::wstring cardImage;
+	int gridWidth;
+	int gridHeight;
+	int cardBackPosition;
 };
 
 #endif

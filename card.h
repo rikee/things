@@ -9,13 +9,27 @@ class Card
 {
 public:
 	Card();
+	Card(char s, int v = 1);
 	void drawCard(HWND cHWND);
-	void setImageName(std::string name);
+	void flipCard();
+	void setCardDimentions(int x, int y);
+	void setImageName(std::wstring name);
+	void setGridDimentions(int x, int y);
+	void setCardBackPosition(int x);
 
 private:
+	char suit;
+	int value;
+	bool faceUp;
 	int cardWidth;
 	int cardHeight;
-	std::string imageName;
+	std::wstring imageName;
+	int gridWidth;
+	int gridHeight;
+	int cardBackPosition;
+
+	int getGridPositionX();
+	int getGridPositionY();
 };
 
 #endif
