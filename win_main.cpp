@@ -1,11 +1,14 @@
 #include "win_main.h"
-#include <iostream>
 
 int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hprev, PSTR cmdline, int ishow)
 {
 	MSG msg;
 	HWND hwnd;
 	WNDCLASSEX wndclassex = {0};
+
+	ULONG_PTR m_gdiplusToken;
+	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+	Gdiplus::GdiplusStartup(&m_gdiplusToken, &gdiplusStartupInput, NULL);
 
 	winTitle = Helper::getTitle(game);
 
@@ -61,6 +64,7 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hprev, PSTR cmdline, int ishow
 		}
 	}
 
+	Gdiplus::GdiplusShutdown(m_gdiplusToken);
 	UnregisterClass(kClassName.c_str(),hinstance);
 	return msg.wParam;
 }
