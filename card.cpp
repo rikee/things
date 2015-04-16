@@ -7,20 +7,35 @@ Card::Card()
 	faceUp = false;
 	cardWidth = 75;
 	cardHeight = 100;
-	imageName = "";
+	imageName = L"";
 	gridWidth = 100;
 	gridHeight = 100;
+	cardBackPosition = 1;
 }
-Card::Card(int v, char s)
+Card::Card(char s, int v)
 {
-	value = v;
 	suit = s;
+	value = v;
 	faceUp = false;
 	cardWidth = 75;
 	cardHeight = 100;
-	imageName = "";
+	imageName = L"";
 	gridWidth = 100;
 	gridHeight = 100;
+	cardBackPosition = 1;
+}
+
+void Card::drawCard(HWND cHWND)
+{
+	HDC hdc = GetDC(cHWND);
+	Gdiplus::Graphics graphics(hdc);
+	Gdiplus::Image image(imageName.c_str());
+	graphics.DrawImage(&image, 300, 100, getGridPositionX(), getGridPositionY(), cardWidth, cardHeight, Gdiplus::UnitPixel);
+}
+
+void Card::flipCard()
+{
+	faceUp = !faceUp;
 }
 
 void Card::setCardDimentions(int x, int y)
@@ -28,7 +43,7 @@ void Card::setCardDimentions(int x, int y)
 	cardWidth = x;
 	cardHeight = y;
 }
-void Card::setImageName(std::string name)
+void Card::setImageName(std::wstring name)
 {
 	imageName = name;
 }
@@ -37,45 +52,41 @@ void Card::setGridDimentions(int x, int y)
 	gridWidth = x;
 	gridHeight = y;
 }
+void Card::setCardBackPosition(int x)
+{
+	cardBackPosition = x;
+}
 int Card::getGridPositionX()
 {
 	if(!faceUp)
 	{
+		return cardBackPosition * gridWidth;
+	}
+	else if(suit == 'j')
+	{
 		return 0;
 	}
-	switch(suit)
-	{
-	case 'j':
-		return gridWidth;
-	default:
+	else {
 		return gridWidth * (value - 1);
 	}
 }
 int Card::getGridPositionY()
 {
-	if(!faceUp)
+	if(faceUp)
 	{
-		return 0;
+		switch(suit)
+		{
+		case 'j':
+			return 0;
+		case 'c':
+			return gridHeight;
+		case 'd':
+			return 2 * gridHeight;
+		case 'h':
+			return 3 * gridHeight;
+		case 's':
+			return 4 * gridHeight;
+		}
 	}
-	switch(suit)
-	{
-	case 'j':
-		return gridHeight;
-	case 'c':
-		return gridHeight;
-	}
-}
-
-void Card::drawCard(HWND cHWND)
-{
-	HBITMAP hbm = (HBITMAP)LoadImage(GetModuleHandle(NULL),imageName.c_str(),IMAGE_BITMAP,0,0,LR_LOADFROMFILE);
-	HDC hdc = GetDC(cHWND);
-	HDC image_dc = CreateCompatibleDC(hdc);
-	HBITMAP old_hbitmap = (HBITMAP)SelectObject(image_dc,hbm);
-	BitBlt(hdc,50,50,cardWidth,cardHeight,image_dc,0,0,SRCCOPY);
-	BitBlt(hdc,250,50,cardWidth,cardHeight,image_dc,0,100,SRCCOPY);
-
-	Gdiplus::Graphics graphics(hdc);
-	Gdiplus::Image image(L"legacy_sources/cards_sprite.png");
-	graphics.DrawImage(&image, 300, 100, 700, 300, 100, 100, Gdiplus::UnitPixel);
+	return 0;
 }

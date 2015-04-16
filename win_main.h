@@ -6,6 +6,8 @@
 #include <string>
 #include "helper.h"
 #include "thieves.h"
+#include <cstdlib>
+#include <ctime>
 
 
 ///////////////

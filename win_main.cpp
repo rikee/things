@@ -2,6 +2,8 @@
 
 int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hprev, PSTR cmdline, int ishow)
 {
+	std::srand(unsigned(std::time(0)));
+
 	MSG msg;
 	HWND hwnd;
 	WNDCLASSEX wndclassex = {0};
