@@ -21,7 +21,11 @@ private:
 	int low;
 	int average;
 	int points;
+	int cardWidth;
+	int cardHeight;
 	std::string cardImage;
+	int gridWidth;
+	int gridHeight;
 };
 
 #endif

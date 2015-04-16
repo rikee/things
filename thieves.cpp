@@ -7,7 +7,11 @@ Thieves::Thieves(HWND hwnd)
 	low = 100;
 	average = 190;
 	points = 0;
+	cardWidth = 73;
+	cardHeight = 98;
 	cardImage = "legacy_sources/thieves_card.bmp";
+	gridWidth = 100;
+	gridHeight = 100;
 }
 
 void Thieves::paintPoints()
@@ -56,7 +60,9 @@ void Thieves::paintPoints()
 void Thieves::paintCard()
 {
 	Card card;
+	card.setCardDimentions(cardWidth, cardHeight);
 	card.setImageName(cardImage);
+	card.setGridDimentions(gridWidth, gridHeight);
 	card.drawCard(cHWND);
 }
 void Thieves::paintScreen()
