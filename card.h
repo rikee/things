@@ -2,6 +2,7 @@
 #define CARD_H
 
 #include <Windows.h>
+#include <GdiPlus.h>
 #include <string>
 
 class Card
