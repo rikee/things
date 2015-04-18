@@ -19,7 +19,7 @@ public:
 	static int wndHeight;
 	
 private:
-	void paintCard();
+	void paintCard(bool faceUp, int x, int y);
 
 	int cardWidth;
 	int cardHeight;

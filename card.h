@@ -10,7 +10,7 @@ class Card
 public:
 	Card();
 	Card(char s, int v = 1);
-	void drawCard(HWND cHWND);
+	void drawCard(HWND cHWND, int x, int y);
 	void flipCard();
 	void setCardDimentions(int x, int y);
 	void setImageName(std::wstring name);

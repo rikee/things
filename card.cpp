@@ -25,12 +25,12 @@ Card::Card(char s, int v)
 	cardBackPosition = 1;
 }
 
-void Card::drawCard(HWND cHWND)
+void Card::drawCard(HWND cHWND, int x, int y)
 {
 	HDC hdc = GetDC(cHWND);
 	Gdiplus::Graphics graphics(hdc);
 	Gdiplus::Image image(imageName.c_str());
-	graphics.DrawImage(&image, 300, 100, getGridPositionX(), getGridPositionY(), cardWidth, cardHeight, Gdiplus::UnitPixel);
+	graphics.DrawImage(&image, x, y, getGridPositionX(), getGridPositionY(), cardWidth, cardHeight, Gdiplus::UnitPixel);
 }
 
 void Card::flipCard()

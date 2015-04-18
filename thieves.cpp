@@ -1,8 +1,8 @@
 #include "thieves.h"
 
 std::string Thieves::wndTitle = "Forty Thieves";
-int Thieves::wndWidth = 570;
-int Thieves::wndHeight = 380;
+int Thieves::wndWidth = 578;
+int Thieves::wndHeight = 388;
 
 Thieves::Thieves(HWND hwnd)
 {
@@ -63,22 +63,26 @@ void Thieves::paintPoints()
 
 	EndPaint(cHWND, &paintStruct);
 }
-void Thieves::paintCard()
+void Thieves::paintCard(bool faceUp, int x, int y)
 {
-	Deck deck(2);
+	Deck deck(jokers);
 	deck.shuffleDeck();
 
 	Card card = deck.drawCard();
+	
+	points = deck.getRemainingCount();
 
 	card.setCardBackPosition(cardBackPosition);
 	card.setCardDimentions(cardWidth, cardHeight);
 	card.setImageName(cardImage);
 	card.setGridDimentions(gridWidth, gridHeight);
-	card.flipCard();
-	card.drawCard(cHWND);
+
+	if(faceUp) card.flipCard();
+
+	card.drawCard(cHWND, x, y);
 }
 void Thieves::paintScreen()
 {
+	paintCard(false, 100, 100);
 	paintPoints();
-	paintCard();
 }
