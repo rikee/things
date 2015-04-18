@@ -12,8 +12,6 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hprev, PSTR cmdline, int ishow
 	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 	Gdiplus::GdiplusStartup(&m_gdiplusToken, &gdiplusStartupInput, NULL);
 
-	winTitle = Helper::getTitle(game);
-
 	wndclassex.cbSize = sizeof(WNDCLASSEX);
 	wndclassex.style = CS_HREDRAW | CS_VREDRAW;
 	wndclassex.lpfnWndProc = WinProc;
@@ -33,8 +31,8 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hprev, PSTR cmdline, int ishow
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
-		kWinWid,
-		kWinHgt,
+		570,
+		380,
 		NULL,
 		gMenu,
 		hinstance,
@@ -80,6 +78,7 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hprev, PSTR cmdline, int ishow
 LRESULT CALLBACK WinProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 {
 	Thieves thieves(hwnd);
+	Kings kings(hwnd);
 
 	switch(message)
 	{
@@ -88,13 +87,11 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 		{
 		case ID_DEAL_KINGS:
 			game = 'k';
-			SetWindowText(hwnd,"Kings Corners");
-			InvalidateRect(hwnd,NULL,NULL);
+			Helper::initGameWindow(hwnd, game);
 			break;
 		case ID_DEAL_THIEVES:
 			game = 't';
-			SetWindowText(hwnd,"Forty Thieves");
-			InvalidateRect(hwnd,NULL,NULL);
+			Helper::initGameWindow(hwnd, game);
 			break;
 		case ID_QUIT:
 			SendMessage(hwnd, WM_CLOSE, 0 ,0);
@@ -102,10 +99,19 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 		}
 		return 0;
 
+	case WM_CREATE:
+		Helper::initGameWindow(hwnd, game);
+		break;
+
 	case WM_PAINT:
-		if(game == 't')
+		switch(game)
 		{
+		case 't':
 			thieves.paintScreen();
+			break;
+		case 'k':
+			kings.paintScreen();
+			break;
 		}
 		break;
 

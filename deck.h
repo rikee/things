@@ -9,7 +9,7 @@
 struct Deck
 {
 public:
-	Deck(int j = 0);
+	Deck(int j);
 	void shuffleDeck();
 	Card drawCard();
 

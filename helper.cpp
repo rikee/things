@@ -1,14 +1,18 @@
 #include "helper.h"
 
-std::string Helper::getTitle(char x)
+void Helper::initGameWindow(HWND hwnd, char game)
 {
-	switch(x)
+	switch(game)
 	{
 	case 't':
-		return "Forty Thieves";
+		SetWindowText(hwnd,Thieves::wndTitle.c_str());
+		SetWindowPos(hwnd,NULL,NULL,NULL,Thieves::wndWidth,Thieves::wndHeight,SWP_NOMOVE);
+		InvalidateRect(hwnd,NULL,NULL);
+		break;
 	case 'k':
-		return "Kings Corners";
-	default:
-		return "Things";
+		SetWindowText(hwnd,Kings::wndTitle.c_str());
+		SetWindowPos(hwnd,NULL,NULL,NULL,Kings::wndWidth,Kings::wndHeight,SWP_NOMOVE);
+		InvalidateRect(hwnd,NULL,NULL);
+		break;
 	}
 }

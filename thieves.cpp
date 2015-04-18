@@ -1,5 +1,9 @@
 #include "thieves.h"
 
+std::string Thieves::wndTitle = "Forty Thieves";
+int Thieves::wndWidth = 570;
+int Thieves::wndHeight = 380;
+
 Thieves::Thieves(HWND hwnd)
 {
 	cHWND = hwnd;
@@ -13,6 +17,7 @@ Thieves::Thieves(HWND hwnd)
 	gridWidth = 100;
 	gridHeight = 100;
 	cardBackPosition = 1;
+	jokers = 2;
 }
 
 void Thieves::paintPoints()
@@ -65,7 +70,7 @@ void Thieves::paintCard()
 
 	Card card = deck.drawCard();
 
-	card.setCardBackPosition(1);
+	card.setCardBackPosition(cardBackPosition);
 	card.setCardDimentions(cardWidth, cardHeight);
 	card.setImageName(cardImage);
 	card.setGridDimentions(gridWidth, gridHeight);

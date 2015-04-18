@@ -1,15 +1,15 @@
-#ifndef THIEVES_H
-#define THIEVES_H
+#ifndef KINGS_H
+#define KINGS_H
 
 #include <Windows.h>
 #include <string>
 #include "card.h"
 #include "deck.h"
 
-class Thieves
+class Kings
 {
 public:
-	Thieves(HWND hwnd);
+	Kings(HWND hwnd);
 	void paintScreen();
 
 	HWND cHWND;
@@ -19,13 +19,8 @@ public:
 	static int wndHeight;
 	
 private:
-	void paintPoints();
 	void paintCard();
 
-	int high;
-	int low;
-	int average;
-	int points;
 	int cardWidth;
 	int cardHeight;
 	std::wstring cardImage;
