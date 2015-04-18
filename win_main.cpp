@@ -24,6 +24,8 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hprev, PSTR cmdline, int ishow
 
 	RegisterClassEx(&wndclassex);
 
+	gMenu = LoadMenu(hinstance,MAKEINTRESOURCE(IDR_MENU1));
+
 	hwnd = CreateWindowEx(
 		NULL,
 		kClassName.c_str(),
@@ -34,11 +36,15 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hprev, PSTR cmdline, int ishow
 		kWinWid,
 		kWinHgt,
 		NULL,
-		NULL,
+		gMenu,
 		hinstance,
 		NULL
 	);
-	if(!hwnd) return EXIT_FAILURE;
+	if(!hwnd)
+	{
+		DestroyMenu(gMenu);
+		return EXIT_FAILURE;
+	}
 
 	gHDC = GetDC(hwnd);
 	if(!gHDC) return EXIT_FAILURE;
@@ -77,12 +83,32 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 
 	switch(message)
 	{
+	case WM_COMMAND:
+		switch(LOWORD(wparam))
+		{
+		case ID_DEAL_KINGS:
+			game = 'k';
+			SetWindowText(hwnd,"Kings Corners");
+			InvalidateRect(hwnd,NULL,NULL);
+			break;
+		case ID_DEAL_THIEVES:
+			game = 't';
+			SetWindowText(hwnd,"Forty Thieves");
+			InvalidateRect(hwnd,NULL,NULL);
+			break;
+		case ID_QUIT:
+			SendMessage(hwnd, WM_CLOSE, 0 ,0);
+			break;
+		}
+		return 0;
+
 	case WM_PAINT:
 		if(game == 't')
 		{
 			thieves.paintScreen();
 		}
 		break;
+
 	case WM_DESTROY:
 		ReleaseDC(hwnd,gHDC);
 		PostQuitMessage(0);

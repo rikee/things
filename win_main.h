@@ -4,10 +4,11 @@
 #include <Windows.h>
 #include <GdiPlus.h>
 #include <string>
-#include "helper.h"
-#include "thieves.h"
 #include <cstdlib>
 #include <ctime>
+#include "helper.h"
+#include "thieves.h"
+#include "resource.h"
 
 
 ///////////////
@@ -24,6 +25,7 @@ const HBRUSH kBackground = CreateSolidBrush(RGB(0,127,0));
 
 int kWinWid = 570;
 int kWinHgt = 380;
+HMENU gMenu = NULL;
 HDC gHDC = NULL;
 RECT gRect = {0};
 std::string winTitle = "Things";
@@ -33,7 +35,7 @@ std::string winTitle = "Things";
 // States //
 ////////////
 
-char game = 't';
+char game = 'k';
 
 
 LRESULT CALLBACK WinProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
