@@ -4,16 +4,18 @@
 #include <vector>
 #include <algorithm>
 #include "card.h"
-#include "helper.h"
 
 struct Deck
 {
 public:
 	Deck(int j);
+	Deck(int j, std::vector<Card> custDeck);
 	void shuffleDeck();
 	Card drawCard();
+	void discardTop();
 	int getRemainingCount();
 	void getNewDeck();
+	std::vector<Card> getCardVector();
 
 private:
 	static int getRandom(int i);

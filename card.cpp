@@ -11,6 +11,8 @@ Card::Card()
 	gridWidth = 100;
 	gridHeight = 100;
 	cardBackPosition = 1;
+	posX = 0;
+	posY = 0;
 }
 Card::Card(char s, int v)
 {
@@ -23,14 +25,16 @@ Card::Card(char s, int v)
 	gridWidth = 100;
 	gridHeight = 100;
 	cardBackPosition = 1;
+	posX = 0;
+	posY = 0;
 }
 
-void Card::drawCard(HWND cHWND, int x, int y)
+void Card::drawCard(HWND cHWND)
 {
 	HDC hdc = GetDC(cHWND);
 	Gdiplus::Graphics graphics(hdc);
 	Gdiplus::Image image(imageName.c_str());
-	graphics.DrawImage(&image, x, y, getGridPositionX(), getGridPositionY(), cardWidth, cardHeight, Gdiplus::UnitPixel);
+	graphics.DrawImage(&image, posX, posY, getGridPositionX(), getGridPositionY(), cardWidth, cardHeight, Gdiplus::UnitPixel);
 }
 
 void Card::flipCard()
@@ -89,4 +93,17 @@ int Card::getGridPositionY()
 		}
 	}
 	return 0;
+}
+void Card::setPosition(int x, int y)
+{
+	posX = x;
+	posY = y;
+}
+int Card::getPositionX()
+{
+	return posX;
+}
+int Card::getPositionY()
+{
+	return posY;
 }

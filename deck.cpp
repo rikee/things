@@ -5,6 +5,11 @@ Deck::Deck(int j)
 	jokers = j;
 	deck = newDeck();
 }
+Deck::Deck(int j, std::vector<Card> custDeck)
+{
+	jokers = j;
+	deck = custDeck;
+}
 
 std::vector<Card> Deck::newDeck()
 {
@@ -38,6 +43,10 @@ Card Deck::drawCard()
 	deck.pop_back();
 	return drawnCard;
 }
+void Deck::discardTop()
+{
+	deck.pop_back();
+}
 
 int Deck::getRandom(int i)
 {
@@ -50,4 +59,8 @@ int Deck::getRemainingCount()
 void Deck::getNewDeck()
 {
 	deck = newDeck();
+}
+std::vector<Card> Deck::getCardVector()
+{
+	return deck;
 }

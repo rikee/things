@@ -3,7 +3,6 @@
 
 #include <Windows.h>
 #include <string>
-#include "card.h"
 #include "deck.h"
 
 class Thieves
@@ -20,7 +19,10 @@ public:
 	
 private:
 	void paintPoints();
-	void paintCard(bool faceUp, int x, int y);
+	void paintCard(Card card, bool faceUp);
+	void dealHand();
+	void initializeHand();
+	std::vector<Deck> drawCardColumns(Deck &currDeck);
 
 	int high;
 	int low;
@@ -33,6 +35,8 @@ private:
 	int gridHeight;
 	int cardBackPosition;
 	int jokers;
+	Deck deck;
+	std::vector<Deck> cardColumns;
 };
 
 #endif

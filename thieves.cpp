@@ -5,6 +5,7 @@ int Thieves::wndWidth = 578;
 int Thieves::wndHeight = 388;
 
 Thieves::Thieves(HWND hwnd)
+	:deck(2)
 {
 	cHWND = hwnd;
 	high = 400;
@@ -63,15 +64,8 @@ void Thieves::paintPoints()
 
 	EndPaint(cHWND, &paintStruct);
 }
-void Thieves::paintCard(bool faceUp, int x, int y)
+void Thieves::paintCard(Card card, bool faceUp)
 {
-	Deck deck(jokers);
-	deck.shuffleDeck();
-
-	Card card = deck.drawCard();
-	
-	points = deck.getRemainingCount();
-
 	card.setCardBackPosition(cardBackPosition);
 	card.setCardDimentions(cardWidth, cardHeight);
 	card.setImageName(cardImage);
@@ -79,10 +73,48 @@ void Thieves::paintCard(bool faceUp, int x, int y)
 
 	if(faceUp) card.flipCard();
 
-	card.drawCard(cHWND, x, y);
+	card.drawCard(cHWND);
+}
+void Thieves::dealHand()
+{
+	Card topCard;
+	for(size_t i = 0; i < cardColumns.size(); i++)
+	{
+		while(cardColumns[i].getRemainingCount() > 0)
+		{
+			topCard = cardColumns[i].drawCard();
+			paintCard(topCard, true);
+		}
+	}
+
 }
 void Thieves::paintScreen()
 {
-	paintCard(false, 100, 100);
 	paintPoints();
+	initializeHand();
+	dealHand();
+}
+
+std::vector<Deck> Thieves::drawCardColumns(Deck &currDeck)
+{
+	std::vector<Deck> deckCols;
+	Card topCard;
+	for(size_t i = 0; i < 7; i++)
+	{
+		std::vector<Card> column;
+		for(size_t j = 0; j < 5; j++)
+		{
+			topCard = currDeck.drawCard();
+			topCard.setPosition(i * (cardWidth + 1) + 3, j * 20 + 3);
+			column.push_back(topCard);
+		}
+		deckCols.push_back(Deck(0, column));
+	}
+	return deckCols;
+}
+void Thieves::initializeHand()
+{
+	deck.getNewDeck();
+	deck.shuffleDeck();
+	cardColumns = drawCardColumns(deck);
 }

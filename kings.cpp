@@ -16,7 +16,7 @@ Kings::Kings(HWND hwnd)
 	jokers = 0;
 }
 
-void Kings::paintCard(bool faceUp, int x, int y)
+void Kings::paintCard(bool faceUp)
 {
 	Deck deck(jokers);
 	deck.shuffleDeck();
@@ -30,9 +30,9 @@ void Kings::paintCard(bool faceUp, int x, int y)
 
 	if(faceUp) card.flipCard();
 
-	card.drawCard(cHWND, x, y);
+	card.drawCard(cHWND);
 }
 void Kings::paintScreen()
 {
-	paintCard(false, 300, 100);
+	paintCard(false);
 }
