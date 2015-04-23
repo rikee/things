@@ -16,6 +16,7 @@ public:
 	int getRemainingCount();
 	void getNewDeck();
 	std::vector<Card> getCardVector();
+	Card getCardFromIndex(int index);
 
 private:
 	static int getRandom(int i);

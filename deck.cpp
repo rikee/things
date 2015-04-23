@@ -40,12 +40,15 @@ void Deck::shuffleDeck()
 Card Deck::drawCard()
 {
 	Card drawnCard = deck[deck.size() - 1];
-	deck.pop_back();
+	discardTop();
 	return drawnCard;
 }
 void Deck::discardTop()
 {
-	deck.pop_back();
+	if(deck.size() > 0)
+	{
+		deck.pop_back();
+	}
 }
 
 int Deck::getRandom(int i)
@@ -63,4 +66,8 @@ void Deck::getNewDeck()
 std::vector<Card> Deck::getCardVector()
 {
 	return deck;
+}
+Card Deck::getCardFromIndex(int index)
+{
+	return deck[index];
 }

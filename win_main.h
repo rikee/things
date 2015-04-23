@@ -24,6 +24,13 @@ const HBRUSH kBackground = CreateSolidBrush(RGB(0,127,0));
 // Globals //
 /////////////
 
+MSG msg;
+HWND hwnd;
+
+Thieves thieves(hwnd);
+Kings kings(hwnd);
+
+WNDCLASSEX wndclassex = {0};
 HMENU gMenu = NULL;
 HDC gHDC = NULL;
 RECT gRect = {0};

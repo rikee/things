@@ -29,7 +29,7 @@ Card::Card(char s, int v)
 	posY = 0;
 }
 
-void Card::drawCard(HWND cHWND)
+void Card::paintCard(HWND cHWND)
 {
 	HDC hdc = GetDC(cHWND);
 	Gdiplus::Graphics graphics(hdc);
@@ -37,9 +37,21 @@ void Card::drawCard(HWND cHWND)
 	graphics.DrawImage(&image, posX, posY, getGridPositionX(), getGridPositionY(), cardWidth, cardHeight, Gdiplus::UnitPixel);
 }
 
+int Card::getValue()
+{
+	return value;
+}
+char Card::getSuit()
+{
+	return suit;
+}
 void Card::flipCard()
 {
 	faceUp = !faceUp;
+}
+bool Card::isFaceUp()
+{
+	return faceUp;
 }
 
 void Card::setCardDimentions(int x, int y)

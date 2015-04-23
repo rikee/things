@@ -4,10 +4,6 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hprev, PSTR cmdline, int ishow
 {
 	std::srand(unsigned(std::time(0)));
 
-	MSG msg;
-	HWND hwnd;
-	WNDCLASSEX wndclassex = {0};
-
 	ULONG_PTR m_gdiplusToken;
 	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 	Gdiplus::GdiplusStartup(&m_gdiplusToken, &gdiplusStartupInput, NULL);
@@ -77,8 +73,8 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hprev, PSTR cmdline, int ishow
 
 LRESULT CALLBACK WinProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 {
-	Thieves thieves(hwnd);
-	Kings kings(hwnd);
+	thieves.setHWND(hwnd);
+	kings.setHWND(hwnd);
 
 	switch(message)
 	{
@@ -87,10 +83,12 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 		{
 		case ID_DEAL_KINGS:
 			game = 'k';
+			kings.setState(0);
 			Helper::initGameWindow(hwnd, game);
 			break;
 		case ID_DEAL_THIEVES:
 			game = 't';
+			thieves.setState(0);
 			Helper::initGameWindow(hwnd, game);
 			break;
 		case ID_QUIT:
@@ -101,19 +99,35 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 
 	case WM_CREATE:
 		Helper::initGameWindow(hwnd, game);
-		break;
+		return 0;
+
+	case WM_LBUTTONDOWN:
+		switch(game)
+		{
+		case 't':
+			thieves.processClick(LOWORD(lparam), HIWORD(lparam));
+			thieves.paintScreen();
+		}
+		return 0;
 
 	case WM_PAINT:
 		switch(game)
 		{
 		case 't':
-			thieves.paintScreen();
+			if(thieves.getState() < 2)
+			{
+				thieves.paintScreen();
+				thieves.setState(2);
+			}
 			break;
 		case 'k':
-			kings.paintScreen();
+			if(kings.getState() < 2)
+			{
+				kings.paintScreen();
+			}
 			break;
 		}
-		break;
+		return 0;
 
 	case WM_DESTROY:
 		ReleaseDC(hwnd,gHDC);

@@ -10,8 +10,10 @@ class Thieves
 public:
 	Thieves(HWND hwnd);
 	void paintScreen();
-
-	HWND cHWND;
+	void setHWND(HWND hwnd);
+	void setState(int s);
+	int getState();
+	void processClick(int x, int y);
 
 	static std::string wndTitle;
 	static int wndWidth;
@@ -19,11 +21,17 @@ public:
 	
 private:
 	void paintPoints();
-	void paintCard(Card card, bool faceUp);
+	void paintCard(Card card);
+	void eraseCard(Card card);
 	void dealHand();
 	void initializeHand();
 	std::vector<Deck> drawCardColumns(Deck &currDeck);
+	int getClickedStack(int mouseX, int mouseY);
+	bool boardClear();
+	
+	int state; // 0 = not started, 1 = between hands, 2 = during hand
 
+	HWND cHWND;
 	int high;
 	int low;
 	int average;
@@ -37,6 +45,9 @@ private:
 	int jokers;
 	Deck deck;
 	std::vector<Deck> cardColumns;
+	int drawPileY;
+	Card activeCard;
+	void moveToActiveSpot(Card &card);
 };
 
 #endif

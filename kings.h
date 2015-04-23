@@ -11,6 +11,9 @@ class Kings
 public:
 	Kings(HWND hwnd);
 	void paintScreen();
+	void setHWND(HWND hwnd);
+	void setState(int s);
+	int getState();
 
 	HWND cHWND;
 
@@ -20,6 +23,8 @@ public:
 	
 private:
 	void paintCard(bool faceUp);
+
+	int state; // 0 = not started, 1 = between hands, 2 = during hand
 
 	int cardWidth;
 	int cardHeight;
