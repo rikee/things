@@ -31,10 +31,30 @@ Card::Card(char s, int v)
 
 void Card::paintCard(HWND cHWND)
 {
-	HDC hdc = GetDC(cHWND);
-	Gdiplus::Graphics graphics(hdc);
-	Gdiplus::Image image(imageName.c_str());
-	graphics.DrawImage(&image, posX, posY, getGridPositionX(), getGridPositionY(), cardWidth, cardHeight, Gdiplus::UnitPixel);
+	PAINTSTRUCT paintStruct;
+	RECT rect;
+	GetClientRect(cHWND, &rect);
+	BITMAP bm;
+	HDC hdc = BeginPaint(cHWND, &paintStruct);
+	HDC oldDC = CreateCompatibleDC(hdc);
+	HBITMAP image = mLoadImg(&imageName[0]);
+	HBITMAP oldBmp;
+	BLENDFUNCTION bf;
+
+	GetObject(image, sizeof(bm), &bm);
+
+	bf.BlendOp = AC_SRC_OVER;
+	bf.BlendFlags = 0;
+	bf.SourceConstantAlpha = 0xff;
+	bf.AlphaFormat = AC_SRC_ALPHA;
+
+	oldBmp = (HBITMAP)SelectObject(oldDC, image);
+	AlphaBlend(hdc, 100, 200, cardWidth, cardHeight, oldDC, getGridPositionX(), getGridPositionY(), cardWidth, cardHeight, bf);
+	SelectObject(oldDC, oldBmp);
+	DeleteDC(oldDC);
+	ReleaseDC(cHWND, hdc);
+
+	EndPaint(cHWND, &paintStruct);
 }
 
 int Card::getValue()
@@ -118,4 +138,13 @@ int Card::getPositionX()
 int Card::getPositionY()
 {
 	return posY;
+}
+HBITMAP Card::mLoadImg(WCHAR *szFilename)
+{
+	HBITMAP result = NULL;
+
+	Gdiplus::Bitmap* bitmap = new Gdiplus::Bitmap(szFilename,false);
+	bitmap->GetHBITMAP(NULL, &result);
+	delete bitmap;
+	return result;
 }

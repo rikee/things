@@ -3,6 +3,7 @@
 
 #include <Windows.h>
 #include <GdiPlus.h>
+#include <WinGDI.h>
 #include <string>
 
 class Card
@@ -38,6 +39,7 @@ private:
 
 	int getGridPositionX();
 	int getGridPositionY();
+	HBITMAP mLoadImg(WCHAR *szFilename);
 };
 
 #endif
