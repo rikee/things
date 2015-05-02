@@ -9,6 +9,7 @@ Thieves::Thieves(HWND hwnd)
 {
 	state = 0;
 	cHWND = hwnd;
+	cHDC = NULL;
 	high = 400;
 	low = 100;
 	average = 190;
@@ -40,9 +41,6 @@ void Thieves::paintPoints()
 {
 	RECT cRect;
 	GetClientRect(cHWND, &cRect);
-	PAINTSTRUCT paintStruct;
-
-	HDC cHDC = BeginPaint(cHWND, &paintStruct);
 
 	int clientWidth = cRect.right - cRect.left;
 	int clientHeight = cRect.bottom - cRect.top;
@@ -78,8 +76,6 @@ void Thieves::paintPoints()
 	TextOut(cHDC, textX, textY, "Points:", strlen("Points:"));
 	textX += textInfo.tmAveCharWidth * strlen("Points:") + 3;
 	TextOut(cHDC, textX, textY, pointsText.c_str(), strlen(pointsText.c_str()));
-
-	EndPaint(cHWND, &paintStruct);
 }
 void Thieves::paintCard(Card card)
 {
@@ -88,13 +84,13 @@ void Thieves::paintCard(Card card)
 	card.setImageName(cardImage);
 	card.setGridDimentions(gridWidth, gridHeight);
 
-	card.paintCard(cHWND);
+	card.paintCard(cHWND, cHDC);
 }
 void Thieves::eraseCard(Card card)
 {
 	RECT cRect;
 	GetClientRect(cHWND, &cRect);
-	HDC cHDC = GetDC(cHWND);
+	cHDC = GetDC(cHWND);
 
 	HBRUSH hbrush = CreateSolidBrush(RGB(0,127,0));
 	HBRUSH oldBrush = (HBRUSH)SelectObject(cHDC, hbrush);
@@ -107,6 +103,28 @@ void Thieves::eraseCard(Card card)
 	DeleteObject(hbrush);
 	SelectObject(cHDC, oldPen);
 	DeleteObject(hpen);
+}
+
+void Thieves::initializeHand()
+{
+	deck.getNewDeck();
+	deck.shuffleDeck();
+	cardColumns = drawCardColumns(deck);
+	dealHand();
+}
+void Thieves::paintScreen()
+{
+	paintPoints();
+
+	if(state < 2)
+	{
+		initializeHand();
+		state = 2;
+	}
+	else
+	{
+		dealHand();
+	}
 }
 void Thieves::dealHand()
 {
@@ -128,23 +146,44 @@ void Thieves::dealHand()
 		cardColumns[drawPileIndex].discardTop();
 		eraseCard(erased);
 		activeCard = erased;
-		moveToActiveSpot(erased);
-		if(!erased.isFaceUp()) erased.flipCard();
-		paintCard(erased);
+		moveToActiveSpot(activeCard);
+		if(!activeCard.isFaceUp()) activeCard.flipCard();
 		if (cardColumns[drawPileIndex].getRemainingCount() > 0) {
 			Card redraw = cardColumns[drawPileIndex].getCardFromIndex(cardColumns[drawPileIndex].getRemainingCount() - 1);
 			paintCard(redraw);
 		}
 	}
+	paintCard(activeCard);
 }
-void Thieves::paintScreen()
+void Thieves::processClick(int x, int y)
 {
-	paintPoints();
-
-	if(state < 2)
+	int stackIndex = getClickedStack(x,y);
+	if (stackIndex >= 0)
+	{
+		if (cardColumns[stackIndex].getRemainingCount() > 0) {
+			Card erased = cardColumns[stackIndex].getCardFromIndex(cardColumns[stackIndex].getRemainingCount() - 1);
+			if( erased.getValue() - activeCard.getValue() == 1 || 
+				erased.getValue() - activeCard.getValue() == -1 ||
+				stackIndex == cardColumns.size() - 1 ||
+				activeCard.getSuit() == 'j' || erased.getSuit() == 'j')
+			{
+				cardColumns[stackIndex].discardTop();
+				eraseCard(erased);
+				points += getCardValue(erased);
+				activeCard = erased;
+				moveToActiveSpot(activeCard);
+				if(!activeCard.isFaceUp()) activeCard.flipCard();
+				paintCard(activeCard);
+				if (cardColumns[stackIndex].getRemainingCount() > 0) {
+					Card redraw = cardColumns[stackIndex].getCardFromIndex(cardColumns[stackIndex].getRemainingCount() - 1);
+					paintCard(redraw);
+				}
+			}
+		}
+	}
+	if(boardClear())
 	{
 		initializeHand();
-		state = 2;
 	}
 }
 
@@ -176,43 +215,7 @@ std::vector<Deck> Thieves::drawCardColumns(Deck &currDeck)
 	deckCols.push_back(Deck(0, drawPile));
 	return deckCols;
 }
-void Thieves::initializeHand()
-{
-	deck.getNewDeck();
-	deck.shuffleDeck();
-	cardColumns = drawCardColumns(deck);
-	dealHand();
-}
-void Thieves::processClick(int x, int y)
-{
-	int stackIndex = getClickedStack(x,y);
-	if (stackIndex >= 0)
-	{
-		if (cardColumns[stackIndex].getRemainingCount() > 0) {
-			Card erased = cardColumns[stackIndex].getCardFromIndex(cardColumns[stackIndex].getRemainingCount() - 1);
-			if( erased.getValue() - activeCard.getValue() == 1 || 
-				erased.getValue() - activeCard.getValue() == -1 ||
-				stackIndex == cardColumns.size() - 1 ||
-				activeCard.getSuit() == 'j' || erased.getSuit() == 'j')
-			{
-				cardColumns[stackIndex].discardTop();
-				eraseCard(erased);
-				activeCard = erased;
-				moveToActiveSpot(erased);
-				if(!erased.isFaceUp()) erased.flipCard();
-				paintCard(erased);
-				if (cardColumns[stackIndex].getRemainingCount() > 0) {
-					Card redraw = cardColumns[stackIndex].getCardFromIndex(cardColumns[stackIndex].getRemainingCount() - 1);
-					paintCard(redraw);
-				}
-			}
-		}
-	}
-	if(boardClear())
-	{
-		initializeHand();
-	}
-}
+
 int Thieves::getClickedStack(int mouseX, int mouseY)
 {
 	int topCardX, topCardY;
@@ -246,4 +249,35 @@ bool Thieves::boardClear()
 		if(cardColumns[i].getRemainingCount() > 0) return false;
 	}
 	return true;
+}
+int Thieves::getCardValue(Card cleared)
+{
+	if(!cleared.isFaceUp())
+	{
+		return 0;
+	}
+	if(cleared.getSuit() == 'j')
+	{
+		return 0;
+	}
+	if(cleared.getValue() == 1 || cleared.getValue() == 13)
+	{
+		return 8;
+	}
+	else if(cleared.getValue() < 4 || cleared.getValue() > 10)
+	{
+		return 6;
+	}
+	else if(cleared.getValue() < 6 || cleared.getValue() > 8)
+	{
+		return 4;
+	}
+	else
+	{
+		return 2;
+	}
+}
+void Thieves::setHDC(HDC hdc)
+{
+	cHDC = hdc;
 }

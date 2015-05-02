@@ -44,7 +44,7 @@ void Kings::paintCard(bool faceUp)
 
 	if(faceUp) card.flipCard();
 
-	card.paintCard(cHWND);
+	//card.paintCard(cHWND);
 }
 void Kings::paintScreen()
 {

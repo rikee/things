@@ -11,6 +11,7 @@ public:
 	Thieves(HWND hwnd);
 	void paintScreen();
 	void setHWND(HWND hwnd);
+	void setHDC(HDC hdc);
 	void setState(int s);
 	int getState();
 	void processClick(int x, int y);
@@ -28,10 +29,12 @@ private:
 	std::vector<Deck> drawCardColumns(Deck &currDeck);
 	int getClickedStack(int mouseX, int mouseY);
 	bool boardClear();
+	int getCardValue(Card cleared);
 	
 	int state; // 0 = not started, 1 = between hands, 2 = during hand
 
 	HWND cHWND;
+	HDC cHDC;
 	int high;
 	int low;
 	int average;
@@ -47,6 +50,7 @@ private:
 	std::vector<Deck> cardColumns;
 	int drawPileY;
 	Card activeCard;
+
 	void moveToActiveSpot(Card &card);
 };
 

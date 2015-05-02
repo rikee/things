@@ -11,7 +11,7 @@ class Card
 public:
 	Card();
 	Card(char s, int v = 1);
-	void paintCard(HWND cHWND);
+	void paintCard(HWND cHWND, HDC cHDC);
 	int getValue();
 	char getSuit();
 	void flipCard();

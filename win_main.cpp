@@ -75,6 +75,8 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 {
 	thieves.setHWND(hwnd);
 	kings.setHWND(hwnd);
+	PAINTSTRUCT paintStruct;
+	HDC hdc = NULL;
 
 	switch(message)
 	{
@@ -106,19 +108,18 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 		{
 		case 't':
 			thieves.processClick(LOWORD(lparam), HIWORD(lparam));
-			thieves.paintScreen();
 		}
 		return 0;
 
 	case WM_PAINT:
+		hdc = BeginPaint(hwnd, &paintStruct);
+
 		switch(game)
 		{
 		case 't':
-			if(thieves.getState() < 2)
-			{
-				thieves.paintScreen();
-				thieves.setState(2);
-			}
+			thieves.setHDC(hdc);
+			thieves.paintScreen();
+			thieves.setState(2);
 			break;
 		case 'k':
 			if(kings.getState() < 2)
@@ -127,9 +128,11 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 			}
 			break;
 		}
+		EndPaint(hwnd, &paintStruct);
 		return 0;
 
 	case WM_DESTROY:
+		ReleaseDC(hwnd,hdc);
 		ReleaseDC(hwnd,gHDC);
 		PostQuitMessage(0);
 		return 0;

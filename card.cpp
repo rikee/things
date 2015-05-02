@@ -29,13 +29,11 @@ Card::Card(char s, int v)
 	posY = 0;
 }
 
-void Card::paintCard(HWND cHWND)
+void Card::paintCard(HWND cHWND, HDC hdc)
 {
-	PAINTSTRUCT paintStruct;
 	RECT rect;
 	GetClientRect(cHWND, &rect);
 	BITMAP bm;
-	HDC hdc = BeginPaint(cHWND, &paintStruct);
 	HDC oldDC = CreateCompatibleDC(hdc);
 	HBITMAP image = mLoadImg(&imageName[0]);
 	HBITMAP oldBmp;
@@ -49,12 +47,9 @@ void Card::paintCard(HWND cHWND)
 	bf.AlphaFormat = AC_SRC_ALPHA;
 
 	oldBmp = (HBITMAP)SelectObject(oldDC, image);
-	AlphaBlend(hdc, 100, 200, cardWidth, cardHeight, oldDC, getGridPositionX(), getGridPositionY(), cardWidth, cardHeight, bf);
+	AlphaBlend(hdc, posX, posY, cardWidth, cardHeight, oldDC, getGridPositionX(), getGridPositionY(), cardWidth, cardHeight, bf);
 	SelectObject(oldDC, oldBmp);
 	DeleteDC(oldDC);
-	ReleaseDC(cHWND, hdc);
-
-	EndPaint(cHWND, &paintStruct);
 }
 
 int Card::getValue()
