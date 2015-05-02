@@ -24,7 +24,7 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hprev, PSTR cmdline, int ishow
 		NULL,
 		kClassName.c_str(),
 		winTitle.c_str(),
-		WS_OVERLAPPEDWINDOW,
+		WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
 		578,

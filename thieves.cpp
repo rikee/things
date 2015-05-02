@@ -170,6 +170,7 @@ void Thieves::processClick(int x, int y)
 				cardColumns[stackIndex].discardTop();
 				eraseCard(erased);
 				points += getCardValue(erased);
+				paintPoints();
 				activeCard = erased;
 				moveToActiveSpot(activeCard);
 				if(!activeCard.isFaceUp()) activeCard.flipCard();
