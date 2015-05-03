@@ -3,6 +3,7 @@
 
 #include <Windows.h>
 #include <string>
+#include "helper.h"
 #include "deck.h"
 
 class Thieves
@@ -15,6 +16,7 @@ public:
 	void setState(int s);
 	int getState();
 	void processClick(int x, int y);
+	void resetPoints(int val = 0);
 
 	static std::string wndTitle;
 	static int wndWidth;
@@ -29,11 +31,13 @@ private:
 	std::vector<Deck> drawCardColumns(Deck &currDeck);
 	int getClickedStack(int mouseX, int mouseY);
 	bool boardClear();
+	bool noDrawPile();
 	int getCardValue(Card cleared);
 	
 	int state; // 0 = not started, 1 = between hands, 2 = during hand
 
 	HWND cHWND;
+	HWND cDlg;
 	HDC cHDC;
 	int high;
 	int low;

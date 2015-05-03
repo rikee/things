@@ -9,6 +9,7 @@ Thieves::Thieves(HWND hwnd)
 {
 	state = 0;
 	cHWND = hwnd;
+	cDlg = NULL;
 	cHDC = NULL;
 	high = 400;
 	low = 100;
@@ -158,6 +159,12 @@ void Thieves::dealHand()
 void Thieves::processClick(int x, int y)
 {
 	int stackIndex = getClickedStack(x,y);
+	
+	if(stackIndex == cardColumns.size() - 1 && noDrawPile())
+	{
+			cDlg = Helper::initDialog(cHWND);
+	}
+
 	if (stackIndex >= 0)
 	{
 		if (cardColumns[stackIndex].getRemainingCount() > 0) {
@@ -251,6 +258,10 @@ bool Thieves::boardClear()
 	}
 	return true;
 }
+bool Thieves::noDrawPile()
+{
+	return cardColumns[cardColumns.size() - 1].getRemainingCount() == 0;
+}
 int Thieves::getCardValue(Card cleared)
 {
 	if(!cleared.isFaceUp())
@@ -281,4 +292,8 @@ int Thieves::getCardValue(Card cleared)
 void Thieves::setHDC(HDC hdc)
 {
 	cHDC = hdc;
+}
+void Thieves::resetPoints(int val)
+{
+	points = val;
 }

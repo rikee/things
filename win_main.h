@@ -26,13 +26,13 @@ const HBRUSH kBackground = CreateSolidBrush(RGB(0,127,0));
 
 MSG msg;
 HWND hwnd;
+HWND dlgHwnd;
 
 Thieves thieves(hwnd);
 Kings kings(hwnd);
 
 WNDCLASSEX wndclassex = {0};
 HMENU gMenu = NULL;
-HDC gHDC = NULL;
 RECT gRect = {0};
 std::string winTitle = "Things";
 
@@ -49,6 +49,8 @@ char game = 't';
 ///////////////
 
 LRESULT CALLBACK WinProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
+
+BOOL CALLBACK DialogProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
 
 
 #endif

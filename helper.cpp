@@ -16,3 +16,7 @@ void Helper::initGameWindow(HWND hwnd, char game)
 		break;
 	}
 }
+HWND Helper::initDialog(HWND hwnd)
+{
+	return CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DIALOG1), hwnd, (DLGPROC)DialogProc);
+}

@@ -39,11 +39,9 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hprev, PSTR cmdline, int ishow
 		DestroyMenu(gMenu);
 		return EXIT_FAILURE;
 	}
-
-	gHDC = GetDC(hwnd);
-	if(!gHDC) return EXIT_FAILURE;
-
-	GetClientRect(hwnd, &gRect);
+	
+	thieves.setHWND(hwnd);
+	kings.setHWND(hwnd);
 
 	ShowWindow(hwnd, SW_SHOWDEFAULT);
 	UpdateWindow(hwnd);
@@ -73,9 +71,8 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hprev, PSTR cmdline, int ishow
 
 LRESULT CALLBACK WinProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 {
-	thieves.setHWND(hwnd);
-	kings.setHWND(hwnd);
 	PAINTSTRUCT paintStruct;
+	HINSTANCE hinstance = GetModuleHandle(NULL);
 	HDC hdc = NULL;
 
 	switch(message)
@@ -91,6 +88,7 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 		case ID_DEAL_THIEVES:
 			game = 't';
 			thieves.setState(0);
+			thieves.resetPoints();
 			Helper::initGameWindow(hwnd, game);
 			break;
 		case ID_QUIT:
@@ -132,11 +130,51 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 		return 0;
 
 	case WM_DESTROY:
+	case WM_CLOSE:
 		ReleaseDC(hwnd,hdc);
-		ReleaseDC(hwnd,gHDC);
 		PostQuitMessage(0);
 		return 0;
 	}
 
 	return DefWindowProc(hwnd, message, wparam, lparam);
+}
+
+BOOL CALLBACK DialogProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
+{
+	HWND mainHwnd = GetParent(hwnd);
+	switch(message)
+	{
+	case WM_INITDIALOG:
+		return true;
+
+	case WM_COMMAND:
+		switch(LOWORD(wparam))
+		{
+		case ID_OK:
+			game = 't';
+			thieves.setState(0);
+			thieves.resetPoints();
+			Helper::initGameWindow(mainHwnd, game);
+			DestroyWindow(hwnd);
+			return true;
+			
+		case ID_SWITCH:
+			game = 'k';
+			kings.setState(0);
+			Helper::initGameWindow(mainHwnd, game);
+			DestroyWindow(hwnd);
+			return true;
+			
+		case ID_CANCEL:
+			SendMessage(mainHwnd, WM_CLOSE, 0 ,0);
+			return true;
+		}
+		
+	case WM_CLOSE:
+	case WM_DESTROY:
+		DestroyWindow(hwnd);
+		return true;
+	}
+
+	return false;
 }
