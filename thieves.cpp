@@ -38,6 +38,11 @@ int Thieves::getState()
 	return state;
 }
 
+
+HWND Thieves::initDialog()
+{
+	return CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDDT_DIALOG_L), cHWND, (DLGPROC)DialogProc);
+}
 void Thieves::paintPoints()
 {
 	RECT cRect;
@@ -87,7 +92,7 @@ void Thieves::paintCard(Card card)
 
 	card.paintCard(cHWND, cHDC);
 }
-void Thieves::eraseCard(Card card)
+void Thieves::eraseCard(Card card, char type)
 {
 	RECT cRect;
 	GetClientRect(cHWND, &cRect);
@@ -98,7 +103,30 @@ void Thieves::eraseCard(Card card)
 	HPEN hpen = CreatePen(PS_NULL, 0, RGB(0,127,0));
 	HPEN oldPen = (HPEN)SelectObject(cHDC, hpen);
 
-	Rectangle(cHDC, card.getPositionX(), card.getPositionY(), card.getPositionX() + cardWidth, card.getPositionY() + cardHeight);
+	int leftEdge, topEdge, rightEdge, bottomEdge;
+	switch(type)
+	{
+	case 'd':
+		leftEdge = card.getPositionX() + cardWidth - 10;
+		topEdge = card.getPositionY();
+		rightEdge = card.getPositionX() + cardWidth + 1;
+		bottomEdge = card.getPositionY() + cardHeight;
+		break;
+
+	case 'l':
+		leftEdge = card.getPositionX();
+		topEdge = card.getPositionY();
+		rightEdge = card.getPositionX() + cardWidth;
+		bottomEdge = card.getPositionY() + cardHeight;
+		break;
+
+	default:
+		leftEdge = card.getPositionX();
+		topEdge = card.getPositionY() + cardHeight - 22;
+		rightEdge = card.getPositionX() + cardWidth;
+		bottomEdge = card.getPositionY() + cardHeight;
+	}
+	Rectangle(cHDC, leftEdge, topEdge, rightEdge, bottomEdge);
 
 	SelectObject(cHDC, oldBrush);
 	DeleteObject(hbrush);
@@ -145,7 +173,7 @@ void Thieves::dealHand()
 		int drawPileIndex = cardColumns.size() - 1;
 		Card erased = cardColumns[drawPileIndex].getCardFromIndex(cardColumns[drawPileIndex].getRemainingCount() - 1);
 		cardColumns[drawPileIndex].discardTop();
-		eraseCard(erased);
+		eraseCard(erased, 'd');
 		activeCard = erased;
 		moveToActiveSpot(activeCard);
 		if(!activeCard.isFaceUp()) activeCard.flipCard();
@@ -156,13 +184,17 @@ void Thieves::dealHand()
 	}
 	paintCard(activeCard);
 }
+
 void Thieves::processClick(int x, int y)
 {
+	if (state == 1) return;
+
 	int stackIndex = getClickedStack(x,y);
 	
 	if(stackIndex == cardColumns.size() - 1 && noDrawPile())
 	{
-			cDlg = Helper::initDialog(cHWND);
+		state = 1;
+		cDlg = initDialog();
 	}
 
 	if (stackIndex >= 0)
@@ -175,7 +207,18 @@ void Thieves::processClick(int x, int y)
 				activeCard.getSuit() == 'j' || erased.getSuit() == 'j')
 			{
 				cardColumns[stackIndex].discardTop();
-				eraseCard(erased);
+				if(cardColumns[stackIndex].getRemainingCount() == 0)
+				{
+					eraseCard(erased, 'l');
+				}
+				else if(stackIndex == cardColumns.size() - 1)
+				{
+					eraseCard(erased, 'd');
+				}
+				else
+				{
+					eraseCard(erased, 's');
+				}
 				points += getCardValue(erased);
 				paintPoints();
 				activeCard = erased;
@@ -292,6 +335,10 @@ int Thieves::getCardValue(Card cleared)
 void Thieves::setHDC(HDC hdc)
 {
 	cHDC = hdc;
+}
+void Thieves::releaseDC()
+{
+	ReleaseDC(cHWND,cHDC);
 }
 void Thieves::resetPoints(int val)
 {

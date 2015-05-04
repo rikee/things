@@ -93,7 +93,7 @@
     <ClInclude Include="win_main.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="dialog.rc" />
+    <ResourceCompile Include="dialog_thieves.rc" />
     <ResourceCompile Include="menu.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

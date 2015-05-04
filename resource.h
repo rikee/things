@@ -7,12 +7,12 @@
 #define ID_DEAL_THIEVES							40002
 #define ID_QUIT									65535
 
-#define IDD_DIALOG1                             110
-#define ID_OK									40011
-#define ID_SWITCH								40012
-#define ID_TEXT1								40013
-#define ID_TEXT2								40014
-#define ID_CANCEL								65535
+#define IDDT_DIALOG_L                           110
+#define IDT_YES									40011
+#define IDT_SWITCH								40012
+#define IDT_TEXT1								40013
+#define IDT_TEXT2								40014
+#define IDT_NO									65535
 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS

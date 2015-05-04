@@ -142,36 +142,63 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 BOOL CALLBACK DialogProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 {
 	HWND mainHwnd = GetParent(hwnd);
+	static HDC hdc;
+	static HBRUSH dlgBG;
 	switch(message)
 	{
 	case WM_INITDIALOG:
+		dlgBG = CreateSolidBrush(RGB(255,255,255));
+		hdc = (HDC)wparam;
 		return true;
+
+	case WM_CTLCOLORDLG:
+		return (LONG)dlgBG;
+
+	case WM_CTLCOLORSTATIC:
+		{
+		SetBkMode(hdc, TRANSPARENT);
+		return (LONG)dlgBG;
+		}
+
+	case WM_CTLCOLORBTN:
+		SetBkMode(hdc, TRANSPARENT);
+		return (LONG)dlgBG;
 
 	case WM_COMMAND:
 		switch(LOWORD(wparam))
 		{
-		case ID_OK:
+		case IDT_YES:
 			game = 't';
 			thieves.setState(0);
 			thieves.resetPoints();
 			Helper::initGameWindow(mainHwnd, game);
+			DeleteObject(dlgBG);
+			ReleaseDC(hwnd,hdc);
 			DestroyWindow(hwnd);
 			return true;
 			
-		case ID_SWITCH:
+		case IDT_SWITCH:
 			game = 'k';
 			kings.setState(0);
 			Helper::initGameWindow(mainHwnd, game);
+			DeleteObject(dlgBG);
+			ReleaseDC(hwnd,hdc);
 			DestroyWindow(hwnd);
 			return true;
 			
-		case ID_CANCEL:
+		case IDT_NO:
+			DeleteObject(dlgBG);
+			ReleaseDC(hwnd,hdc);
 			SendMessage(mainHwnd, WM_CLOSE, 0 ,0);
+			DestroyWindow(hwnd);
 			return true;
 		}
 		
 	case WM_CLOSE:
 	case WM_DESTROY:
+		DeleteObject(dlgBG);
+		thieves.releaseDC();
+		ReleaseDC(hwnd,hdc);
 		DestroyWindow(hwnd);
 		return true;
 	}

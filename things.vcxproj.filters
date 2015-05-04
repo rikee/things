@@ -61,7 +61,7 @@
     <ResourceCompile Include="menu.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
-    <ResourceCompile Include="dialog.rc">
+    <ResourceCompile Include="dialog_thieves.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>

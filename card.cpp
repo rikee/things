@@ -48,6 +48,7 @@ void Card::paintCard(HWND cHWND, HDC hdc)
 
 	oldBmp = (HBITMAP)SelectObject(oldDC, image);
 	AlphaBlend(hdc, posX, posY, cardWidth, cardHeight, oldDC, getGridPositionX(), getGridPositionY(), cardWidth, cardHeight, bf);
+
 	SelectObject(oldDC, oldBmp);
 	DeleteDC(oldDC);
 }

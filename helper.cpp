@@ -2,6 +2,7 @@
 
 void Helper::initGameWindow(HWND hwnd, char game)
 {
+	eraseWindow(hwnd);
 	switch(game)
 	{
 	case 't':
@@ -16,7 +17,25 @@ void Helper::initGameWindow(HWND hwnd, char game)
 		break;
 	}
 }
-HWND Helper::initDialog(HWND hwnd)
+void Helper::eraseWindow(HWND hwnd)
 {
-	return CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DIALOG1), hwnd, (DLGPROC)DialogProc);
+	RECT cRect;
+	GetClientRect(hwnd, &cRect);
+	HDC hdc = GetDC(hwnd);
+
+	int clientWidth = cRect.right - cRect.left;
+	int clientHeight = cRect.bottom - cRect.top;
+
+	HBRUSH hbrush = CreateSolidBrush(RGB(0,127,0));
+	HBRUSH oldBrush = (HBRUSH)SelectObject(hdc, hbrush);
+	HPEN hpen = CreatePen(PS_NULL, 0, RGB(0,127,0));
+	HPEN oldPen = (HPEN)SelectObject(hdc, hpen);
+
+	Rectangle(hdc, 0, 0, clientWidth, clientHeight);
+
+	SelectObject(hdc, oldBrush);
+	DeleteObject(hbrush);
+	SelectObject(hdc, oldPen);
+	DeleteObject(hpen);
+	ReleaseDC(hwnd,hdc);
 }

@@ -3,8 +3,10 @@
 
 #include <Windows.h>
 #include <string>
-#include "helper.h"
+#include "resource.h"
 #include "deck.h"
+
+BOOL CALLBACK DialogProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
 
 class Thieves
 {
@@ -13,6 +15,7 @@ public:
 	void paintScreen();
 	void setHWND(HWND hwnd);
 	void setHDC(HDC hdc);
+	void releaseDC();
 	void setState(int s);
 	int getState();
 	void processClick(int x, int y);
@@ -25,7 +28,7 @@ public:
 private:
 	void paintPoints();
 	void paintCard(Card card);
-	void eraseCard(Card card);
+	void eraseCard(Card card, char type);
 	void dealHand();
 	void initializeHand();
 	std::vector<Deck> drawCardColumns(Deck &currDeck);
@@ -34,7 +37,7 @@ private:
 	bool noDrawPile();
 	int getCardValue(Card cleared);
 	
-	int state; // 0 = not started, 1 = between hands, 2 = during hand
+	int state; // 0 = not started, 1 = game over prompt, 2 = during hand
 
 	HWND cHWND;
 	HWND cDlg;
@@ -56,6 +59,7 @@ private:
 	Card activeCard;
 
 	void moveToActiveSpot(Card &card);
+	HWND initDialog();
 };
 
 #endif
