@@ -3,6 +3,8 @@
 
 #include <Windows.h>
 #include <string>
+#include <fstream>
+#include <sstream>
 #include "resource.h"
 #include "deck.h"
 
@@ -26,6 +28,8 @@ public:
 	static int wndHeight;
 	
 private:
+	void writePoints();
+	std::vector<int> readPoints();
 	void paintPoints();
 	void paintCard(Card card);
 	void eraseCard(Card card, char type);
@@ -45,6 +49,7 @@ private:
 	int high;
 	int low;
 	int average;
+	int games;
 	int points;
 	int cardWidth;
 	int cardHeight;
@@ -60,6 +65,7 @@ private:
 
 	void moveToActiveSpot(Card &card);
 	HWND initDialog();
+	HWND initDialogHigh();
 };
 
 #endif

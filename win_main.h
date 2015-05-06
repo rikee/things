@@ -41,7 +41,7 @@ std::string winTitle = "Things";
 // States //
 ////////////
 
-char game = 't';
+char game = 'k';
 
 
 ///////////////

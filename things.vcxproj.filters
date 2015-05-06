@@ -64,5 +64,8 @@
     <ResourceCompile Include="dialog_thieves.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+    <ResourceCompile Include="dialog_thieves_high.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

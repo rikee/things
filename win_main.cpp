@@ -88,7 +88,6 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 		case ID_DEAL_THIEVES:
 			game = 't';
 			thieves.setState(0);
-			thieves.resetPoints();
 			Helper::initGameWindow(hwnd, game);
 			break;
 		case ID_QUIT:
@@ -168,19 +167,23 @@ BOOL CALLBACK DialogProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 		switch(LOWORD(wparam))
 		{
 		case IDT_YES:
-			game = 't';
-			thieves.setState(0);
-			thieves.resetPoints();
-			Helper::initGameWindow(mainHwnd, game);
+			if(game == 't')
+			{
+				thieves.setState(0);
+				Helper::initGameWindow(mainHwnd, game);
+			}
 			DeleteObject(dlgBG);
 			ReleaseDC(hwnd,hdc);
 			DestroyWindow(hwnd);
 			return true;
 			
 		case IDT_SWITCH:
-			game = 'k';
-			kings.setState(0);
-			Helper::initGameWindow(mainHwnd, game);
+			if(game == 't')
+			{
+				game = 'k';
+				kings.setState(0);
+				Helper::initGameWindow(mainHwnd, game);
+			}
 			DeleteObject(dlgBG);
 			ReleaseDC(hwnd,hdc);
 			DestroyWindow(hwnd);

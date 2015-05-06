@@ -14,7 +14,8 @@ Thieves::Thieves(HWND hwnd)
 	high = 400;
 	low = 100;
 	average = 190;
-	points = 0;
+	games = 0;
+	points = 1;
 	cardWidth = 75;
 	cardHeight = 100;
 	cardImage = L"legacy_sources/cards_sprite.png";
@@ -42,6 +43,47 @@ int Thieves::getState()
 HWND Thieves::initDialog()
 {
 	return CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDDT_DIALOG_L), cHWND, (DLGPROC)DialogProc);
+}
+HWND Thieves::initDialogHigh()
+{
+	return CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDDT_DIALOG_L_HS), cHWND, (DLGPROC)DialogProc);
+}
+void Thieves::writePoints()
+{
+	std::ofstream data("record.tng");
+
+	high = points > high ? points : high;
+	low = points < low ? points : low;
+	average = (average * games + points) / (games + 1);
+
+	if(data.is_open())
+	{
+		data	<< high		<< std::endl
+				<< low		<< std::endl
+				<< average	<< std::endl
+				<< ++games	<< std::endl;
+	}
+
+	data.close();
+}
+std::vector<int> Thieves::readPoints()
+{
+	std::ifstream data("record.tng");
+	std::string item;
+	std::vector<int> items;
+	int tmp;
+
+	while(data >> item)
+	{
+		std::stringstream str(item);
+		str >> tmp;
+		if (!str) break;
+
+		items.push_back(tmp);
+	}
+
+	data.close();
+	return items;
 }
 void Thieves::paintPoints()
 {
@@ -143,6 +185,15 @@ void Thieves::initializeHand()
 }
 void Thieves::paintScreen()
 {
+	if(state < 2)
+	{
+		std::vector<int> pointsArr = readPoints();
+		high = pointsArr[0];
+		low = pointsArr[1];
+		average = pointsArr[2];
+		games = pointsArr[3];
+		resetPoints();
+	}
 	paintPoints();
 
 	if(state < 2)
@@ -194,7 +245,16 @@ void Thieves::processClick(int x, int y)
 	if(stackIndex == cardColumns.size() - 1 && noDrawPile())
 	{
 		state = 1;
-		cDlg = initDialog();
+		if(points > high)
+		{
+			writePoints();
+			cDlg = initDialogHigh();
+		}
+		else
+		{
+			writePoints();
+			cDlg = initDialog();
+		}
 	}
 
 	if (stackIndex >= 0)
@@ -234,6 +294,8 @@ void Thieves::processClick(int x, int y)
 	}
 	if(boardClear())
 	{
+		points += 21;
+		paintPoints();
 		initializeHand();
 	}
 }
