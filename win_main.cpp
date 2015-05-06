@@ -15,6 +15,8 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hprev, PSTR cmdline, int ishow
 	wndclassex.hbrBackground = kBackground;
 	wndclassex.lpszClassName = kClassName.c_str();
 	wndclassex.hCursor = (HCURSOR)LoadImage(NULL, MAKEINTRESOURCE(IDC_ARROW), IMAGE_CURSOR, 0, 0, LR_SHARED);
+	wndclassex.hIcon = (HICON)LoadImage(hinstance,MAKEINTRESOURCE(IDI_ICON1),IMAGE_ICON,0,0,LR_DEFAULTSIZE);
+	wndclassex.hIconSm = wndclassex.hIcon;
 
 	RegisterClassEx(&wndclassex);
 

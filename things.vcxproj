@@ -95,6 +95,7 @@
   <ItemGroup>
     <ResourceCompile Include="dialog_thieves.rc" />
     <ResourceCompile Include="dialog_thieves_high.rc" />
+    <ResourceCompile Include="icon_things.rc" />
     <ResourceCompile Include="menu.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
