@@ -30,7 +30,7 @@ public:
 private:
 	void writePoints();
 	std::vector<int> readPoints();
-	void paintPoints();
+	void paintFrame();
 	void paintCard(Card card);
 	void eraseCard(Card card, char type);
 	void dealHand();
@@ -40,6 +40,9 @@ private:
 	bool boardClear();
 	bool noDrawPile();
 	int getCardValue(Card cleared);
+	void moveToActiveSpot(Card &card);
+	HWND initDialog();
+	HWND initDialogHigh();
 	
 	int state; // 0 = not started, 1 = game over prompt, 2 = during hand
 
@@ -62,10 +65,6 @@ private:
 	std::vector<Deck> cardColumns;
 	int drawPileY;
 	Card activeCard;
-
-	void moveToActiveSpot(Card &card);
-	HWND initDialog();
-	HWND initDialogHigh();
 };
 
 #endif

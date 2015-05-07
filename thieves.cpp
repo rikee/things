@@ -18,7 +18,7 @@ Thieves::Thieves(HWND hwnd)
 	points = 1;
 	cardWidth = 75;
 	cardHeight = 100;
-	cardImage = L"legacy_sources/cards_sprite.png";
+	cardImage = L"cards_sprite.png";
 	gridWidth = 100;
 	gridHeight = 100;
 	cardBackPosition = 1;
@@ -85,7 +85,7 @@ std::vector<int> Thieves::readPoints()
 	data.close();
 	return items;
 }
-void Thieves::paintPoints()
+void Thieves::paintFrame()
 {
 	RECT cRect;
 	GetClientRect(cHWND, &cRect);
@@ -194,7 +194,7 @@ void Thieves::paintScreen()
 		games = pointsArr[3];
 		resetPoints();
 	}
-	paintPoints();
+	paintFrame();
 
 	if(state < 2)
 	{
@@ -280,7 +280,7 @@ void Thieves::processClick(int x, int y)
 					eraseCard(erased, 's');
 				}
 				points += getCardValue(erased);
-				paintPoints();
+				paintFrame();
 				activeCard = erased;
 				moveToActiveSpot(activeCard);
 				if(!activeCard.isFaceUp()) activeCard.flipCard();
@@ -295,7 +295,7 @@ void Thieves::processClick(int x, int y)
 	if(boardClear())
 	{
 		points += 21;
-		paintPoints();
+		paintFrame();
 		initializeHand();
 	}
 }

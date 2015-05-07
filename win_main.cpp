@@ -107,6 +107,11 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 		{
 		case 't':
 			thieves.processClick(LOWORD(lparam), HIWORD(lparam));
+			break;
+			
+		case 'k':
+			kings.processClick(LOWORD(lparam), HIWORD(lparam));
+			break;
 		}
 		return 0;
 
@@ -121,10 +126,9 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 			thieves.setState(2);
 			break;
 		case 'k':
-			if(kings.getState() < 2)
-			{
-				kings.paintScreen();
-			}
+			kings.setHDC(hdc);
+			kings.paintScreen();
+			kings.setState(2);
 			break;
 		}
 		EndPaint(hwnd, &paintStruct);
