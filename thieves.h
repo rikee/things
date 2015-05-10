@@ -41,7 +41,7 @@ private:
 	bool noDrawPile();
 	int getCardValue(Card cleared);
 	void moveToActiveSpot(Card &card);
-	HWND initDialog();
+	HWND initDialogStuck();
 	HWND initDialogHigh();
 	
 	int state; // 0 = not started, 1 = game over prompt, 2 = during hand

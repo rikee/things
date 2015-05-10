@@ -172,21 +172,15 @@ BOOL CALLBACK DialogProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 	case WM_COMMAND:
 		switch(LOWORD(wparam))
 		{
-		case IDT_YES:
-			if(game == 't')
+		case ID_YES:
+			switch(game)
 			{
+			case 't':
 				thieves.setState(0);
 				Helper::initGameWindow(mainHwnd, game);
-			}
-			DeleteObject(dlgBG);
-			ReleaseDC(hwnd,hdc);
-			DestroyWindow(hwnd);
-			return true;
-			
-		case IDT_SWITCH:
-			if(game == 't')
-			{
-				game = 'k';
+				break;
+				
+			case 'k':
 				kings.setState(0);
 				Helper::initGameWindow(mainHwnd, game);
 			}
@@ -195,7 +189,27 @@ BOOL CALLBACK DialogProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 			DestroyWindow(hwnd);
 			return true;
 			
-		case IDT_NO:
+		case ID_SWITCH:
+			switch(game)
+			{
+			case 't':
+				game = 'k';
+				kings.setState(0);
+				Helper::initGameWindow(mainHwnd, game);
+				break;
+
+			case 'k':
+				game = 't';
+				thieves.setState(0);
+				Helper::initGameWindow(mainHwnd, game);
+				break;
+			}
+			DeleteObject(dlgBG);
+			ReleaseDC(hwnd,hdc);
+			DestroyWindow(hwnd);
+			return true;
+			
+		case ID_NO:
 			DeleteObject(dlgBG);
 			ReleaseDC(hwnd,hdc);
 			SendMessage(mainHwnd, WM_CLOSE, 0 ,0);

@@ -1,7 +1,7 @@
 #include "kings.h"
 
 std::string Kings::wndTitle = "Kings Corners";
-int Kings::wndWidth = 518;
+int Kings::wndWidth = 523;
 int Kings::wndHeight = 458;
 
 Kings::Kings(HWND hwnd)
@@ -22,6 +22,7 @@ Kings::Kings(HWND hwnd)
 	cardWidth = 75;
 	cardHeight = 100;
 	cardImage = L"cards_sprite.png";
+	cardImageSelected = L"cards_sprite_negative.png";
 	gridWidth = 100;
 	gridHeight = 100;
 	cardBackPosition = 2;
@@ -30,6 +31,9 @@ Kings::Kings(HWND hwnd)
 	drawPilePosY = 3;
 	activePosX = 320;
 	activePosY = 3;
+	activeSlot.setPosition(activePosX, activePosY);
+	messageTopLine = "";
+	messageBottomLine = "";
 }
 
 void Kings::setHWND(HWND hwnd)
@@ -43,6 +47,15 @@ void Kings::setState(int s)
 int Kings::getState()
 {
 	return state;
+}
+
+HWND Kings::initDialogStuck()
+{
+	return CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DIALOG_L), cHWND, (DLGPROC)DialogProc);
+}
+HWND Kings::initDialogWon()
+{
+	return CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DIALOG_W), cHWND, (DLGPROC)DialogProc);
 }
 
 void Kings::paintFrame()
@@ -69,6 +82,17 @@ void Kings::paintFrame()
 		TextOut(cHDC, textX, textY, cardsLeft.c_str(), strlen(cardsLeft.c_str()));
 	}
 }
+void Kings::paintMessage()
+{
+	TEXTMETRIC textInfo;
+	GetTextMetrics(cHDC, &textInfo);
+	SetBkColor(cHDC, RGB(255,255,255));
+	int textY = messageBoxTop + 2;
+	int textX = messageBoxLeft + 10;
+	TextOut(cHDC, textX, textY, messageTopLine.c_str(), strlen(messageTopLine.c_str()));
+	textY += textInfo.tmHeight + 2;
+	TextOut(cHDC, textX, textY, messageBottomLine.c_str(), strlen(messageBottomLine.c_str()));
+}
 void Kings::paintCard(Card card)
 {
 	card.setCardBackPosition(cardBackPosition);
@@ -77,6 +101,24 @@ void Kings::paintCard(Card card)
 	card.setGridDimentions(gridWidth, gridHeight);
 
 	card.paintCard(cHWND, cHDC);
+}
+void Kings::paintCard(Card card, bool selected)
+{
+	card.setCardBackPosition(cardBackPosition);
+	card.setCardDimentions(cardWidth, cardHeight);
+	card.setImageName(cardImage);
+	card.setGridDimentions(gridWidth, gridHeight);
+
+	if(selected)
+	{
+		card.setImageName(cardImageSelected.c_str());
+		card.paintCard(cHWND, cHDC);
+		card.setImageName(cardImage.c_str());
+	}
+	else
+	{
+		card.paintCard(cHWND, cHDC);
+	}
 }
 void Kings::initializeHand()
 {
@@ -100,6 +142,7 @@ void Kings::paintScreen()
 	}
 	paintSlots();
 	paintFrame();
+	paintMessage();
 }
 void Kings::dealHand()
 {
@@ -114,19 +157,75 @@ void Kings::processClick(int x, int y)
 	if (state == 1) return;
 
 	int slotIndex = getClickedSlot(x,y);
-	if (slotIndex > -1)
+	if(slotIndex < 0)
 	{
-		slots[slotIndex].setCard(active);
+		return;
+	}
+	if(slots[slotIndex].isFilled())
+	{
+		//return;
+	}
+	if(active.getValue() == 13)
+	{
+		if(slotIndex != 0 && slotIndex != 3 && slotIndex != 12 && slotIndex != 15)
+		{
+			messageTopLine = "Kings go on the corners!";
+			paintMessage();
+			InvalidateRect(cHWND,NULL,NULL);
+			return;
+		}
+		active.flipCard();
+	}
+	else if(active.getValue() == 12)
+	{
+		if(slotIndex != 4 && slotIndex != 7 && slotIndex != 8 && slotIndex != 11)
+		{
+			messageTopLine = "Queens go on the sides!";
+			paintMessage();
+			InvalidateRect(cHWND,NULL,NULL);
+			return;
+		}
+		active.flipCard();
+	}
+	else if(active.getValue() == 11)
+	{
+		if(slotIndex != 1 && slotIndex != 2 && slotIndex != 13 && slotIndex != 14)
+		{
+			messageTopLine = "Jacks go on the";
+			messageBottomLine = "top or bottom!";
+			paintMessage();
+			InvalidateRect(cHWND,NULL,NULL);
+			return;
+		}
+		active.flipCard();
+	}
+
+	slots[slotIndex].setCard(active);
+	if(deck.getRemainingCount() > 0)
+	{
 		active = deck.drawCard();
 		active.flipCard();
 		active.setPosition(activePosX, activePosY);
+	}
+	
+	messageTopLine = "";
+	messageBottomLine = "";
+	paintFrame();
+	paintMessage();
+	InvalidateRect(cHWND,NULL,NULL);
 
-		paintFrame();
-		InvalidateRect(cHWND,NULL,NULL);
+	if(isLost())
+	{
+		//state = 1;
+		initDialogStuck();
 	}
 }
 void Kings::initSlots()
 {
+	while(slots.size() > 0)
+	{
+		slots.pop_back();
+	}
 	Slot slot;
 	int posX, posY;
 	for(int i = 0; i < 4; i++)
@@ -192,6 +291,37 @@ int Kings::getClickedSlot(int mouseX, int mouseY)
 		}
 	}
 	return -1;
+}
+
+bool Kings::isWon()
+{
+	return false;
+}
+bool Kings::isLost()
+{
+	if(state == 3)
+	{
+
+	}
+	else
+	{
+		if( active.getValue() == 13
+			&& slots[0].isFilled() && slots[3].isFilled() && slots[12].isFilled() && slots[15].isFilled())
+		{
+			return true;
+		}
+		else if( active.getValue() == 12
+			&& slots[4].isFilled() && slots[7].isFilled() && slots[8].isFilled() && slots[11].isFilled())
+		{
+			return true;
+		}
+		else if( active.getValue() == 11
+			&& slots[1].isFilled() && slots[2].isFilled() && slots[13].isFilled() && slots[14].isFilled())
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 void Kings::setHDC(HDC hdc)

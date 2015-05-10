@@ -55,13 +55,19 @@ public:
 	
 private:
 	void paintFrame();
+	void paintMessage();
 	void initSlots();
 	void paintSlots();
 	void paintCard(Card card);
+	void paintCard(Card card, bool selected);
 	void dealHand();
 	void initializeHand();
 	int getClickedSlot(int mouseX, int mouseY);
 	char getSlotType(int i, int j);
+	bool isWon();
+	bool isLost();
+	HWND initDialogStuck();
+	HWND initDialogWon();
 
 	int state; // 0 = not started, 1 = between hands, 2 = during hand
 
@@ -73,17 +79,21 @@ private:
 	int cardWidth;
 	int cardHeight;
 	std::wstring cardImage;
+	std::wstring cardImageSelected;
 	int gridWidth;
 	int gridHeight;
 	int cardBackPosition;
 	int jokers;
 	Deck deck;
 	Card active;
+	Slot activeSlot;
 	std::vector<Slot> slots;
 	int drawPilePosX;
 	int drawPilePosY;
 	int activePosX;
 	int activePosY;
+	std::string messageTopLine;
+	std::string messageBottomLine;
 };
 
 #endif

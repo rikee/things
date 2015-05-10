@@ -93,8 +93,9 @@
     <ClInclude Include="win_main.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="dialog_thieves.rc" />
-    <ResourceCompile Include="dialog_thieves_high.rc" />
+    <ResourceCompile Include="dialog_high.rc" />
+    <ResourceCompile Include="dialog_stuck.rc" />
+    <ResourceCompile Include="dialog_won.rc" />
     <ResourceCompile Include="icon_things.rc" />
     <ResourceCompile Include="menu.rc" />
   </ItemGroup>

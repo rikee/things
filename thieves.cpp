@@ -40,13 +40,13 @@ int Thieves::getState()
 }
 
 
-HWND Thieves::initDialog()
+HWND Thieves::initDialogStuck()
 {
-	return CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDDT_DIALOG_L), cHWND, (DLGPROC)DialogProc);
+	return CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DIALOG_L), cHWND, (DLGPROC)DialogProc);
 }
 HWND Thieves::initDialogHigh()
 {
-	return CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDDT_DIALOG_L_HS), cHWND, (DLGPROC)DialogProc);
+	return CreateDialog(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DIALOG_L_HS), cHWND, (DLGPROC)DialogProc);
 }
 void Thieves::writePoints()
 {
@@ -253,7 +253,7 @@ void Thieves::processClick(int x, int y)
 		else
 		{
 			writePoints();
-			cDlg = initDialog();
+			cDlg = initDialogStuck();
 		}
 	}
 
@@ -394,6 +394,11 @@ int Thieves::getCardValue(Card cleared)
 		return 2;
 	}
 }
+void Thieves::resetPoints(int val)
+{
+	points = val;
+}
+
 void Thieves::setHDC(HDC hdc)
 {
 	cHDC = hdc;
@@ -401,8 +406,4 @@ void Thieves::setHDC(HDC hdc)
 void Thieves::releaseDC()
 {
 	ReleaseDC(cHWND,cHDC);
-}
-void Thieves::resetPoints(int val)
-{
-	points = val;
 }
