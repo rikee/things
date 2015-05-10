@@ -183,6 +183,7 @@ BOOL CALLBACK DialogProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 			case 'k':
 				kings.setState(0);
 				Helper::initGameWindow(mainHwnd, game);
+				break;
 			}
 			DeleteObject(dlgBG);
 			ReleaseDC(hwnd,hdc);

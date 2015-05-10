@@ -66,10 +66,11 @@ private:
 	char getSlotType(int i, int j);
 	bool isWon();
 	bool isLost();
+	bool boardFull();
 	HWND initDialogStuck();
 	HWND initDialogWon();
 
-	int state; // 0 = not started, 1 = between hands, 2 = during hand
+	int state; // 0 = not started, 1 = between hands, 2 = during hand, 3 = board clearing
 
 	HWND cHWND;
 	HWND cDlg;

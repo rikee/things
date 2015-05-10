@@ -131,7 +131,7 @@ void Kings::initializeHand()
 }
 void Kings::paintScreen()
 {
-	if(state < 2)
+	if(state < 1)
 	{
 		initializeHand();
 		state = 2;
@@ -151,20 +151,21 @@ void Kings::dealHand()
 	Card fakeDeckTop;
 	fakeDeckTop.setPosition(drawPilePosX, drawPilePosY);
 	paintCard(fakeDeckTop);
+	if(state == 3)
+	{
+		activeSlot.paintCardSlot(cHWND, cHDC);
+	}
 }
 void Kings::processClick(int x, int y)
 {
-	if (state == 1) return;
+	if(state == 1) return;
 
 	int slotIndex = getClickedSlot(x,y);
-	if(slotIndex < 0)
-	{
-		return;
-	}
-	if(slots[slotIndex].isFilled())
-	{
-		//return;
-	}
+
+	if(slotIndex < 0) return;
+
+	if(slots[slotIndex].isFilled()) return;
+
 	if(active.getValue() == 13)
 	{
 		if(slotIndex != 0 && slotIndex != 3 && slotIndex != 12 && slotIndex != 15)
@@ -201,6 +202,13 @@ void Kings::processClick(int x, int y)
 	}
 
 	slots[slotIndex].setCard(active);
+	if(boardFull())
+	{
+		activeSlot.paintCardSlot(cHWND, cHDC);
+		state = 3;
+		InvalidateRect(cHWND,NULL,NULL);
+		return;
+	}
 	if(deck.getRemainingCount() > 0)
 	{
 		active = deck.drawCard();
@@ -216,7 +224,7 @@ void Kings::processClick(int x, int y)
 
 	if(isLost())
 	{
-		//state = 1;
+		state = 1;
 		initDialogStuck();
 	}
 }
@@ -322,6 +330,17 @@ bool Kings::isLost()
 		}
 	}
 	return false;
+}
+bool Kings::boardFull()
+{
+	for(size_t i = 0; i < slots.size(); i++)
+	{
+		if(!slots[i].isFilled())
+		{
+			return false;
+		}
+	}
+	return true;
 }
 
 void Kings::setHDC(HDC hdc)
