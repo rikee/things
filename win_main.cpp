@@ -128,7 +128,10 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 		case 'k':
 			kings.setHDC(hdc);
 			kings.paintScreen();
-			kings.setState(2);
+			if(kings.getState() < 2)
+			{
+				kings.setState(2);
+			}
 			break;
 		}
 		EndPaint(hwnd, &paintStruct);

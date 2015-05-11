@@ -15,6 +15,9 @@ struct Slot
 public:
 	Slot();
 	bool isFilled();
+	bool isSelected();
+	void select();
+	void deselect();
 	int getPositionX();
 	int getPositionY();
 	void setPosition(int x, int y);
@@ -29,6 +32,7 @@ private:
 	int slotHeight;
 	std::wstring slotImage;
 	bool filled;
+	bool selected;
 	int posX;
 	int posY;
 	char type;
@@ -64,6 +68,7 @@ private:
 	void initializeHand();
 	int getClickedSlot(int mouseX, int mouseY);
 	char getSlotType(int i, int j);
+	bool clickedDrawPile(int mouseX, int mouseY);
 	bool isWon();
 	bool isLost();
 	bool boardFull();
@@ -88,11 +93,13 @@ private:
 	Deck deck;
 	Card active;
 	Slot activeSlot;
+	int selectedSlotIndex;
 	std::vector<Slot> slots;
 	int drawPilePosX;
 	int drawPilePosY;
 	int activePosX;
 	int activePosY;
+	Card fakeDeckTop;
 	std::string messageTopLine;
 	std::string messageBottomLine;
 };

@@ -34,6 +34,8 @@ Kings::Kings(HWND hwnd)
 	activeSlot.setPosition(activePosX, activePosY);
 	messageTopLine = "";
 	messageBottomLine = "";
+	selectedSlotIndex = -1;
+	fakeDeckTop.setPosition(drawPilePosX, drawPilePosY);
 }
 
 void Kings::setHWND(HWND hwnd)
@@ -147,14 +149,15 @@ void Kings::paintScreen()
 void Kings::dealHand()
 {
 	active.setPosition(activePosX, activePosY);
-	paintCard(active);
-	Card fakeDeckTop;
-	fakeDeckTop.setPosition(drawPilePosX, drawPilePosY);
-	paintCard(fakeDeckTop);
-	if(state == 3)
+	if(state < 3)
+	{
+		paintCard(active);
+	}
+	else
 	{
 		activeSlot.paintCardSlot(cHWND, cHDC);
 	}
+	paintCard(fakeDeckTop);
 }
 void Kings::processClick(int x, int y)
 {
@@ -162,70 +165,132 @@ void Kings::processClick(int x, int y)
 
 	int slotIndex = getClickedSlot(x,y);
 
+	if(state == 3)
+	{
+		if(clickedDrawPile(x,y))
+		{
+			state = 2;
+			if(deck.getRemainingCount() > 0)
+			{
+				active = deck.drawCard();
+				active.flipCard();
+				active.setPosition(activePosX, activePosY);
+			}
+			for(size_t i = 0; i < slots.size(); i++)
+			{
+				slots[i].deselect();
+			}
+			InvalidateRect(cHWND, NULL, NULL);
+			return;
+		}
+		else if(slotIndex < 0)
+		{
+			return;
+		}
+
+		int val = slots[slotIndex].getCard().getValue();
+		if( val < 11 &&
+			selectedSlotIndex != slotIndex &&
+			slots[slotIndex].isFilled())
+		{
+			for(size_t i = 0; i < slots.size(); i++)
+			{
+				slots[i].deselect();
+			}
+			if(val == 10)
+			{
+				slots[slotIndex].removeCard();
+				selectedSlotIndex = -1;
+			}
+			else if(selectedSlotIndex > -1 && val + slots[selectedSlotIndex].getCard().getValue() == 10)
+			{
+				slots[slotIndex].removeCard();
+				slots[selectedSlotIndex].removeCard();
+				selectedSlotIndex = -1;
+			}
+			else
+			{
+				slots[slotIndex].select();
+				selectedSlotIndex = slotIndex;
+			}
+		}
+	}
+
 	if(slotIndex < 0) return;
 
-	if(slots[slotIndex].isFilled()) return;
+	if(state == 2)
+	{
+		//if(slots[slotIndex].isFilled()) return;
 
-	if(active.getValue() == 13)
-	{
-		if(slotIndex != 0 && slotIndex != 3 && slotIndex != 12 && slotIndex != 15)
+		if(active.getValue() == 13)
 		{
-			messageTopLine = "Kings go on the corners!";
-			paintMessage();
-			InvalidateRect(cHWND,NULL,NULL);
-			return;
+			if(slotIndex != 0 && slotIndex != 3 && slotIndex != 12 && slotIndex != 15)
+			{
+				messageTopLine = "Kings go on the corners!";
+				paintMessage();
+				InvalidateRect(cHWND,NULL,NULL);
+				return;
+			}
+			active.flipCard();
 		}
-		active.flipCard();
-	}
-	else if(active.getValue() == 12)
-	{
-		if(slotIndex != 4 && slotIndex != 7 && slotIndex != 8 && slotIndex != 11)
+		else if(active.getValue() == 12)
 		{
-			messageTopLine = "Queens go on the sides!";
-			paintMessage();
-			InvalidateRect(cHWND,NULL,NULL);
-			return;
+			if(slotIndex != 4 && slotIndex != 7 && slotIndex != 8 && slotIndex != 11)
+			{
+				messageTopLine = "Queens go on the sides!";
+				paintMessage();
+				InvalidateRect(cHWND,NULL,NULL);
+				return;
+			}
+			active.flipCard();
 		}
-		active.flipCard();
-	}
-	else if(active.getValue() == 11)
-	{
-		if(slotIndex != 1 && slotIndex != 2 && slotIndex != 13 && slotIndex != 14)
+		else if(active.getValue() == 11)
 		{
-			messageTopLine = "Jacks go on the";
-			messageBottomLine = "top or bottom!";
-			paintMessage();
-			InvalidateRect(cHWND,NULL,NULL);
-			return;
+			if(slotIndex != 1 && slotIndex != 2 && slotIndex != 13 && slotIndex != 14)
+			{
+				messageTopLine = "Jacks go on the";
+				messageBottomLine = "top or bottom!";
+				paintMessage();
+				InvalidateRect(cHWND,NULL,NULL);
+				return;
+			}
+			active.flipCard();
 		}
-		active.flipCard();
-	}
 
-	slots[slotIndex].setCard(active);
-	if(boardFull())
-	{
-		activeSlot.paintCardSlot(cHWND, cHDC);
-		state = 3;
-		InvalidateRect(cHWND,NULL,NULL);
-		return;
-	}
-	if(deck.getRemainingCount() > 0)
-	{
-		active = deck.drawCard();
-		active.flipCard();
-		active.setPosition(activePosX, activePosY);
+		slots[slotIndex].setCard(active);
+		if(boardFull())
+		{
+			activeSlot.paintCardSlot(cHWND, cHDC);
+			state = 3;
+			InvalidateRect(cHWND,NULL,NULL);
+			if(isLost())
+			{
+				state = 1;
+				initDialogStuck();
+			}
+			return;
+		}
+		if(deck.getRemainingCount() > 0)
+		{
+			active = deck.drawCard();
+			active.flipCard();
+			active.setPosition(activePosX, activePosY);
+		}
 	}
 	
 	messageTopLine = "";
 	messageBottomLine = "";
-	paintFrame();
-	paintMessage();
 	InvalidateRect(cHWND,NULL,NULL);
 
 	if(isLost())
 	{
 		state = 1;
 		initDialogStuck();
+	}
+	if(isWon())
+	{
+		state = 1;
+		initDialogWon();
 	}
 }
 void Kings::initSlots()
@@ -255,7 +320,14 @@ void Kings::paintSlots()
 	{
 		if (slots[i].isFilled())
 		{
-			paintCard(slots[i].getCard());
+			if(slots[i].isSelected())
+			{
+				paintCard(slots[i].getCard(), true);
+			}
+			else
+			{
+				paintCard(slots[i].getCard());
+			}
 		}
 		else
 		{
@@ -300,16 +372,58 @@ int Kings::getClickedSlot(int mouseX, int mouseY)
 	}
 	return -1;
 }
+bool Kings::clickedDrawPile(int mouseX, int mouseY)
+{
+	if( (mouseX > fakeDeckTop.getPositionX() && mouseX < fakeDeckTop.getPositionX() + cardWidth) &&
+		(mouseY > fakeDeckTop.getPositionY() && mouseY < fakeDeckTop.getPositionY() + cardHeight) )
+	{
+		return true;
+	}
+	return false;
+}
 
 bool Kings::isWon()
 {
-	return false;
+	if(deck.getRemainingCount() == 0)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 bool Kings::isLost()
 {
 	if(state == 3)
 	{
-
+		for(size_t i = 0; i < slots.size(); i++)
+		{
+			int val = slots[i].getCard().getValue();
+			if(!slots[i].isFilled())
+			{
+				return false;
+			}
+			else if(val > 10)
+			{
+				continue;
+			}
+			else if(val == 10)
+			{
+				return false;
+			}
+			else
+			{
+				for(size_t j = i + 1; j < slots.size(); j++)
+				{
+					if(val + slots[j].getCard().getValue() == 10)
+					{
+						return false;
+					}
+				}
+			}
+		}
+		return true;
 	}
 	else
 	{
@@ -360,6 +474,7 @@ Slot::Slot()
 	posX = 0;
 	posY = 0;
 	filled = false;
+	selected = false;
 	type = 'o';
 }
 void Slot::paintCardSlot(HWND cHWND, HDC cHDC)
@@ -389,6 +504,18 @@ void Slot::paintCardSlot(HWND cHWND, HDC cHDC)
 bool Slot::isFilled()
 {
 	return filled;
+}
+bool Slot::isSelected()
+{
+	return selected;
+}
+void Slot::select()
+{
+	selected = true;
+}
+void Slot::deselect()
+{
+	selected = false;
 }
 int Slot::getPositionX()
 {
