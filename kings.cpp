@@ -5,7 +5,7 @@ int Kings::wndWidth = 523;
 int Kings::wndHeight = 458;
 
 Kings::Kings(HWND hwnd)
-	:deck(0), kh('h',13), ks('s',13), kc('c',13), kd('d',13)
+	:deck(0)
 {
 	state = 0;
 	cHWND = hwnd;
@@ -36,11 +36,6 @@ Kings::Kings(HWND hwnd)
 	messageBottomLine = "";
 	selectedSlotIndex = -1;
 	fakeDeckTop.setPosition(drawPilePosX, drawPilePosY);
-	winAnimate = false;
-	kh.flipCard();
-	ks.flipCard();
-	kc.flipCard();
-	kd.flipCard();
 }
 
 void Kings::setHWND(HWND hwnd)
@@ -281,7 +276,7 @@ void Kings::processClick(int x, int y)
 
 	if(state == 2)
 	{
-		//if(slots[slotIndex].isFilled()) return;
+		if(slots[slotIndex].isFilled()) return;
 
 		if(active.getValue() == 13)
 		{
@@ -351,7 +346,6 @@ void Kings::processClick(int x, int y)
 	if(startingCount == 0 && isWon())
 	{
 		state = 10;
-		winAnimate = true;
 		initDialogWon();
 	}
 }

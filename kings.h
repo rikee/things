@@ -52,21 +52,18 @@ public:
 	void setState(int s);
 	int getState();
 	void processClick(int x, int y);
-	void paintCard(Card card);
-	void paintCard(Card card, bool selected);
 
 	static std::string wndTitle;
 	static int wndWidth;
 	static int wndHeight;
-	
-	bool winAnimate;
-	Card kh, ks, kc, kd;
 	
 private:
 	void paintFrame();
 	void paintMessage();
 	void initSlots();
 	void paintSlots();
+	void paintCard(Card card);
+	void paintCard(Card card, bool selected);
 	void dealHand();
 	void initializeHand();
 	int getClickedSlot(int mouseX, int mouseY);
