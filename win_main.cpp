@@ -132,6 +132,72 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)
 			{
 				kings.setState(2);
 			}
+			
+			if(kings.winAnimate)
+			{
+				kings.winAnimate = false;
+				int diff = 3;
+				int top = 3;
+				int left = 2;
+				int bottom = 306;
+				int right = 233;
+				int rows = 78;
+				int cols = 102;
+				for(int i = 0; i < rows; i++)
+				{
+					kings.kh.setPosition(left + ((rows - 1) - i) * diff, bottom);
+					kings.paintCard(kings.kh);
+					kings.ks.setPosition(left + i * diff, bottom);
+					kings.paintCard(kings.ks);
+					kings.kc.setPosition(left + ((rows - 1) - i) * diff, top);
+					kings.paintCard(kings.kc);
+					kings.kd.setPosition(left + i * diff, top);
+					kings.paintCard(kings.kd);
+				}
+				for(int i = 0; i < cols; i++)
+				{
+					kings.kh.setPosition(left, top + ((cols - 1) - i) * diff);
+					kings.paintCard(kings.kh);
+					kings.ks.setPosition(right, top + ((cols - 1) - i) * diff);
+					kings.paintCard(kings.ks);
+					kings.kc.setPosition(left, top + i * diff);
+					kings.paintCard(kings.kc);
+					kings.kd.setPosition(right, top + i * diff);
+					kings.paintCard(kings.kd);
+				}
+				
+				for(int i = 0; i < 3; i++)
+				{
+					top += 30;
+					left += 30;
+					bottom -= 30;
+					right -= 30;
+					rows -= 20;
+					cols -= 20;
+					for(int i = 0; i < rows; i++)
+					{
+						kings.kh.setPosition(left + ((rows - 1) - i) * diff, bottom);
+						kings.paintCard(kings.kh);
+						kings.ks.setPosition(left + i * diff, bottom);
+						kings.paintCard(kings.ks);
+						kings.kc.setPosition(left + ((rows - 1) - i) * diff, top);
+						kings.paintCard(kings.kc);
+						kings.kd.setPosition(left + i * diff, top);
+						kings.paintCard(kings.kd);
+					}
+					for(int i = 0; i < cols; i++)
+					{
+						kings.kh.setPosition(left, top + ((cols - 1) - i) * diff);
+						kings.paintCard(kings.kh);
+						kings.ks.setPosition(right, top + ((cols - 1) - i) * diff);
+						kings.paintCard(kings.ks);
+						kings.kc.setPosition(left, top + i * diff);
+						kings.paintCard(kings.kc);
+						kings.kd.setPosition(right, top + i * diff);
+						kings.paintCard(kings.kd);
+					}
+				}
+			}
 			break;
 		}
 		EndPaint(hwnd, &paintStruct);

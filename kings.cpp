@@ -5,7 +5,7 @@ int Kings::wndWidth = 523;
 int Kings::wndHeight = 458;
 
 Kings::Kings(HWND hwnd)
-	:deck(0)
+	:deck(0), kh('h',13), ks('s',13), kc('c',13), kd('d',13)
 {
 	state = 0;
 	cHWND = hwnd;
@@ -36,6 +36,11 @@ Kings::Kings(HWND hwnd)
 	messageBottomLine = "";
 	selectedSlotIndex = -1;
 	fakeDeckTop.setPosition(drawPilePosX, drawPilePosY);
+	winAnimate = false;
+	kh.flipCard();
+	ks.flipCard();
+	kc.flipCard();
+	kd.flipCard();
 }
 
 void Kings::setHWND(HWND hwnd)
@@ -72,7 +77,7 @@ void Kings::paintFrame()
 	SelectObject(cHDC, oldBrush);
 	DeleteObject(hbrush);
 
-	if(deck.getRemainingCount() > 0)
+	if(deck.getRemainingCount() >= 0)
 	{
 		TEXTMETRIC textInfo;
 		GetTextMetrics(cHDC, &textInfo);
@@ -145,6 +150,15 @@ void Kings::paintScreen()
 	paintSlots();
 	paintFrame();
 	paintMessage();
+
+	if(state == 10)
+	{
+		state = 1;
+	}
+	if(state == 30)
+	{
+		state = 3;
+	}
 }
 void Kings::dealHand()
 {
@@ -165,20 +179,30 @@ void Kings::processClick(int x, int y)
 
 	int slotIndex = getClickedSlot(x,y);
 
+	int startingCount = deck.getRemainingCount();
+
 	if(state == 3)
 	{
 		if(clickedDrawPile(x,y))
 		{
-			state = 2;
-			if(deck.getRemainingCount() > 0)
+			if(noDiscards())
 			{
-				active = deck.drawCard();
-				active.flipCard();
-				active.setPosition(activePosX, activePosY);
+				state = 2;
+				if(deck.getRemainingCount() > 0)
+				{
+					active = deck.drawCard();
+					active.flipCard();
+					active.setPosition(activePosX, activePosY);
+				}
+				for(size_t i = 0; i < slots.size(); i++)
+				{
+					slots[i].deselect();
+				}
 			}
-			for(size_t i = 0; i < slots.size(); i++)
+			else
 			{
-				slots[i].deselect();
+				messageTopLine = "There are still";
+				messageBottomLine = "cards to remove!";
 			}
 			InvalidateRect(cHWND, NULL, NULL);
 			return;
@@ -188,21 +212,21 @@ void Kings::processClick(int x, int y)
 			return;
 		}
 
-		int val = slots[slotIndex].getCard().getValue();
-		if( val < 11 &&
-			selectedSlotIndex != slotIndex &&
-			slots[slotIndex].isFilled())
+		for(size_t i = 0; i < slots.size(); i++)
 		{
-			for(size_t i = 0; i < slots.size(); i++)
-			{
-				slots[i].deselect();
-			}
-			if(val == 10)
+			slots[i].deselect();
+		}
+		int val = slots[slotIndex].getCard().getValue();
+		if( val < 11 && slots[slotIndex].isFilled())
+		{
+			if(val == 10 && selectedSlotIndex != slotIndex)
 			{
 				slots[slotIndex].removeCard();
 				selectedSlotIndex = -1;
 			}
-			else if(selectedSlotIndex > -1 && val + slots[selectedSlotIndex].getCard().getValue() == 10)
+			else if(selectedSlotIndex > -1 &&
+					val + slots[selectedSlotIndex].getCard().getValue() == 10 &&
+					selectedSlotIndex != slotIndex)
 			{
 				slots[slotIndex].removeCard();
 				slots[selectedSlotIndex].removeCard();
@@ -212,7 +236,44 @@ void Kings::processClick(int x, int y)
 			{
 				slots[slotIndex].select();
 				selectedSlotIndex = slotIndex;
+				switch(val)
+				{
+				case 9:
+					messageTopLine = "Pick an ace.";
+					break;
+				case 8:
+					messageTopLine = "Pick a 2.";
+					break;
+				case 7:
+					messageTopLine = "Pick a 3.";
+					break;
+				case 6:
+					messageTopLine = "Pick a 4.";
+					break;
+				case 5:
+					messageTopLine = "Pick a 5.";
+					break;
+				case 4:
+					messageTopLine = "Pick a 6.";
+					break;
+				case 3:
+					messageTopLine = "Pick a 7.";
+					break;
+				case 2:
+					messageTopLine = "Pick an 8.";
+					break;
+				case 1:
+					messageTopLine = "Pick a 9.";
+					break;
+				}
+				messageBottomLine = "";
+				InvalidateRect(cHWND,NULL,NULL);
+				return;
 			}
+		}
+		else
+		{
+			selectedSlotIndex = -1;
 		}
 	}
 
@@ -265,7 +326,7 @@ void Kings::processClick(int x, int y)
 			InvalidateRect(cHWND,NULL,NULL);
 			if(isLost())
 			{
-				state = 1;
+				state = 30;
 				initDialogStuck();
 			}
 			return;
@@ -287,9 +348,10 @@ void Kings::processClick(int x, int y)
 		state = 1;
 		initDialogStuck();
 	}
-	if(isWon())
+	if(startingCount == 0 && isWon())
 	{
-		state = 1;
+		state = 10;
+		winAnimate = true;
 		initDialogWon();
 	}
 }
@@ -374,8 +436,7 @@ int Kings::getClickedSlot(int mouseX, int mouseY)
 }
 bool Kings::clickedDrawPile(int mouseX, int mouseY)
 {
-	if( (mouseX > fakeDeckTop.getPositionX() && mouseX < fakeDeckTop.getPositionX() + cardWidth) &&
-		(mouseY > fakeDeckTop.getPositionY() && mouseY < fakeDeckTop.getPositionY() + cardHeight) )
+	if(mouseX > activePosX)
 	{
 		return true;
 	}
@@ -452,6 +513,36 @@ bool Kings::boardFull()
 		if(!slots[i].isFilled())
 		{
 			return false;
+		}
+	}
+	return true;
+}
+bool Kings::noDiscards()
+{
+	for(size_t i = 0; i < slots.size(); i++)
+	{
+		int val = slots[i].getCard().getValue();
+		if(!slots[i].isFilled())
+		{
+			continue;
+		}
+		else if(val > 10)
+		{
+			continue;
+		}
+		else if(val == 10)
+		{
+			return false;
+		}
+		else
+		{
+			for(size_t j = i + 1; j < slots.size(); j++)
+			{
+				if(slots[j].isFilled() && val + slots[j].getCard().getValue() == 10)
+				{
+					return false;
+				}
+			}
 		}
 	}
 	return true;
