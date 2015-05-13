@@ -193,6 +193,11 @@ void Kings::processClick(int x, int y)
 				{
 					slots[i].deselect();
 				}
+				if(isLost())
+				{
+					state = 1;
+					initDialogStuck();
+				}
 			}
 			else
 			{

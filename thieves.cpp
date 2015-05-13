@@ -81,6 +81,13 @@ std::vector<int> Thieves::readPoints()
 
 		items.push_back(tmp);
 	}
+	if(!data.is_open())
+	{
+		items.push_back(0);
+		items.push_back(0);
+		items.push_back(0);
+		items.push_back(0);
+	}
 
 	data.close();
 	return items;
